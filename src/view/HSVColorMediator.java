@@ -46,9 +46,9 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		redImage = new BufferedImage(imagesWidth, imagesHeight, BufferedImage.TYPE_INT_ARGB);
 		greenImage = new BufferedImage(imagesWidth, imagesHeight, BufferedImage.TYPE_INT_ARGB);
 		blueImage = new BufferedImage(imagesWidth, imagesHeight, BufferedImage.TYPE_INT_ARGB);
-		computeHImage(red, green, blue);
-		computeSImage(red, green, blue);
-		computeVImage(red, green, blue); 	
+		computeHueImage(red, green, blue);
+		computeSaturationImage(red, green, blue);
+		computeValueImage(red, green, blue); 	
 	}
 	
 	
@@ -75,20 +75,43 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 			updateGreen = true;
 		}
 		if (updateRed) {
-			computeHImage(red, green, blue);
+			computeHueImage(red, green, blue);
 		}
 		if (updateGreen) {
-			computeSImage(red, green, blue);
+			computeSaturationImage(red, green, blue);
 		}
 		if (updateBlue) {
-			computeVImage(red, green, blue);
+			computeValueImage(red, green, blue);
 		}
 		
 		Pixel pixel = new Pixel(red, green, blue, 255);
 		result.setPixel(pixel);
 	}
 	
-	public void computeHImage(int red, int green, int blue) { 
+	public void computeHueImage(int red, int green, int blue) { 
+		/*
+		 *R' = R/255
+		 *G' = G/255
+		 *B' = B/255
+		 *
+		 *Cmax = max(R',G',B')
+		 *Cmin = min(R',G',B')
+		 *
+		 *delta = Cmax-Cmin
+		 *
+		 *Si Cmax = R' :
+		 *H = 60*(((G'-B')/delta)mod(6))
+		 *
+		 *Si Cmax = G' :
+		 *H = 60*(((B'-R')/delta) +2)
+		 *
+		 *Si Cmax = B' :
+		 *H = 60*(((R'-G')/delta) +4)
+		 * 
+		 * Ref : http://www.rapidtables.com/convert/color/rgb-to-hsv.htm
+		 * 
+		 */ 
+		
 		Pixel p = new Pixel(red, green, blue, 255); 
 		for (int i = 0; i<imagesWidth; ++i) {
 			p.setRed((int)(((double)i / (double)imagesWidth)*255.0)); 
@@ -102,7 +125,26 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		}
 	}
 	
-	public void computeSImage(int red, int green, int blue) {
+	public void computeSaturationImage(int red, int green, int blue) {
+		/*
+		 *R' = R/255
+		 *G' = G/255
+		 *B' = B/255
+		 *
+		 *Cmax = max(R',G',B')
+		 *Cmin = min(R',G',B')
+		 *
+		 *delta = Cmax-Cmin
+		 *
+		 * Si Cmax = 0 :
+		 * S = 0
+		 * 
+		 * Si Cmax !=0 :
+		 * S = delta/Cmax
+		 * 
+		 * http://www.rapidtables.com/convert/color/rgb-to-hsv.htm
+		 */
+		
 		Pixel p = new Pixel(red, green, blue, 255); 
 		for (int i = 0; i<imagesWidth; ++i) {
 			p.setGreen((int)(((double)i / (double)imagesWidth)*255.0)); 
@@ -116,7 +158,19 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		}
 	}
 	
-	public void computeVImage(int red, int green, int blue) { 
+	public void computeValueImage(int red, int green, int blue) {
+		/*
+		 *R' = R/255
+		 *G' = G/255
+		 *B' = B/255
+		 *
+		 *Cmax = max(R',G',B')
+		 *
+		 * V = Cmax
+		 * 
+		 * http://www.rapidtables.com/convert/color/rgb-to-hsv.htm
+		 */
+		
 		Pixel p = new Pixel(red, green, blue, 255); 
 		for (int i = 0; i<imagesWidth; ++i) {
 			p.setBlue((int)(((double)i / (double)imagesWidth)*255.0)); 
@@ -212,9 +266,9 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		hCS.setValue(red);
 		sCS.setValue(green);
 		vCS.setValue(blue);
-		computeHImage(red, green, blue);
-		computeSImage(red, green, blue);
-		computeVImage(red, green, blue);
+		computeHueImage(red, green, blue);
+		computeSaturationImage(red, green, blue);
+		computeValueImage(red, green, blue);
 		
 		// Efficiency issue: When the color is adjusted on a tab in the 
 		// user interface, the sliders color of the other tabs are recomputed,
