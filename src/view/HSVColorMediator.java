@@ -112,14 +112,34 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		 * 
 		 */ 
 		
-		Pixel p = new Pixel(red, green, blue, 255); 
-		for (int i = 0; i<imagesWidth; ++i) {
-			p.setRed((int)(((double)i / (double)imagesWidth)*255.0)); 
-			int rgb = p.getARGB();
-			for (int j = 0; j<imagesHeight; ++j) {
-				redImage.setRGB(i, j, rgb);
-			}
+		double hue;
+		
+		double rPrime = red / 255;
+		double gPrime = green / 255;
+		double bPrime = blue / 255;
+		
+		double cmax = setTripleMax(rPrime,gPrime,bPrime);
+		double cmin = setTripleMin(rPrime,gPrime,bPrime);
+		double delta = cmax - cmin;
+		
+		if(cmax == rPrime){
+			hue = 60*(((gPrime-bPrime) / delta) %6); 
 		}
+		else if(cmax == gPrime){
+			hue = 60*(((bPrime-rPrime) / delta) +2);
+		}
+		else {
+			hue = 60*(((rPrime-gPrime) / delta) +4);
+		}
+//		
+//		Pixel p = new Pixel(red, green, blue, 255); 
+//		for (int i = 0; i<imagesWidth; ++i) {
+//			p.setRed((int)(((double)i / (double)imagesWidth)*255.0)); 
+//			int rgb = p.getARGB();
+//			for (int j = 0; j<imagesHeight; ++j) {
+//				redImage.setRGB(i, j, rgb);
+//			}
+//		}
 		if (hCS != null) {
 			hCS.update(redImage);
 		}
@@ -277,6 +297,32 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		// change in the user interface. This solution was not implemented
 		// here since it would increase the complexity of the code, making it
 		// harder to understand.
+	}
+	
+	private double setTripleMax(double a, double b, double c){
+		return setDoubleMax(setDoubleMax(a,b),c);
+	}
+	
+	private double setTripleMin(double a, double b, double c){
+		return setDoubleMax(setDoubleMax(a,b),c);
+	}
+	
+	private double setDoubleMax(double a, double b){
+		
+		double high = a;
+		if (b>a){
+			high = b;
+		}		
+		return high;
+	}
+	
+	private double setDoubleMin(double a, double b){
+		
+		double low = a;
+		if (b<a){
+			low = b;
+		}		
+		return low;
 	}
 
 }
