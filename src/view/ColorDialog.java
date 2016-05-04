@@ -42,6 +42,7 @@ public class ColorDialog extends JDialog {
 	private RGBColorMediator rgbMediator;
 	private ActionListener okActionListener;
 	private ColorDialogResult result;
+	private HSVColorMediator hsvmediator;
 	
 	static public Pixel getColor(Frame owner, Pixel color, int imageWidths) {
 		ColorDialogResult result = new ColorDialogResult(color);
@@ -123,7 +124,23 @@ public class ColorDialog extends JDialog {
 	}
 	
 	private JPanel createHSVPanel(ColorDialogResult result, int imageWidths) {	
+		hsvmediator = new HSVColorMediator(result, imageWidths, 30);
+		
 		JPanel panel = new JPanel();
+		
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		ColorSlider csH = new ColorSlider("H:", result.getPixel().getRed(), hsvmediator.getRedImage());
+		ColorSlider csS = new ColorSlider("S:", result.getPixel().getGreen(), hsvmediator.getGreenImage());
+		ColorSlider csV = new ColorSlider("V:", result.getPixel().getBlue(), hsvmediator.getBlueImage());
+		
+		hsvmediator.setHCS(csH);
+		hsvmediator.setSCS(csS);
+		hsvmediator.setVCS(csV);
+		
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		panel.add(csH);
+		panel.add(csS);
+		panel.add(csV);
 		
 		return panel;
 	}
