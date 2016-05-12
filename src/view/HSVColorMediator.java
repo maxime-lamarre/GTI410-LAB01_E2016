@@ -21,12 +21,22 @@ import model.ObserverIF;
 import model.Pixel;
 
 class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
+	
+	//Les trois sliders virtuels;
 	ColorSlider hCS;
 	ColorSlider sCS;
 	ColorSlider vCS;
+	
+	//Valeurs RGB
 	int red;
 	int green;
 	int blue;
+	
+	//Valeurs HSV
+	int hue;
+	int saturation;
+	int value;
+	
 	BufferedImage redImage;
 	BufferedImage greenImage;
 	BufferedImage blueImage;
@@ -56,81 +66,55 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 	 * @see View.SliderObserver#update(double)
 	 */
 	public void update(ColorSlider s, int v) {
-		boolean updateRed = false;
-		boolean updateGreen = false;
-		boolean updateBlue = false;
-		if (s == hCS && v != red) {
-			red = v;
-			updateGreen = true;
-			updateBlue = true;
+		boolean updateHue = false;
+		boolean updateSaturation = false;
+		boolean updateValue = false;
+		if (s == hCS && v != hue) {
+			hue = v;
+			updateSaturation = true;
+			updateValue = true;
 		}
-		if (s == sCS && v != green) {
-			green = v;
-			updateRed = true;
-			updateBlue = true;
+		if (s == sCS && v != saturation) {
+			saturation = v;
+			updateHue = true;
+			updateValue = true;
 		}
-		if (s == vCS && v != blue) {
-			blue = v;
-			updateRed = true;
-			updateGreen = true;
+		if (s == vCS && v != value) {
+			value = v;
+			updateHue = true;
+			updateSaturation = true;
 		}
-		if (updateRed) {
-			computeHueImage(red, green, blue);
+		if (updateHue) {
+			computeHueImage(hue,saturation,value);
 		}
-		if (updateGreen) {
-			computeSaturationImage(red, green, blue);
+		if (updateSaturation) {
+			computeSaturationImage(hue,saturation,value);
 		}
-		if (updateBlue) {
-			computeValueImage(red, green, blue);
+		if (updateValue) {
+			computeValueImage(hue,saturation,value);
 		}
 		
-		Pixel pixel = new Pixel(red, green, blue, 255);
+		double[] rgbfinal = convertHSV_to_RGB(hue,saturation,value);
+		
+		red = (int)rgbfinal[0];
+		green = (int)rgbfinal[1];
+		blue = (int)rgbfinal[2];
+		
+		
+		Pixel pixel = new Pixel(red,green,blue, 255);
 		result.setPixel(pixel);
 	}
 	
-	public void computeHueImage(int red, int green, int blue) { 
+	public void computeHueImage(int var_hue, int var_saturation, int var_value) { 
+
 		/*
-		 *R' = R/255
-		 *G' = G/255
-		 *B' = B/255
-		 *
-		 *Cmax = max(R',G',B')
-		 *Cmin = min(R',G',B')
-		 *
-		 *delta = Cmax-Cmin
-		 *
-		 *Si Cmax = R' :
-		 *H = 60*(((G'-B')/delta)mod(6))
-		 *
-		 *Si Cmax = G' :
-		 *H = 60*(((B'-R')/delta) +2)
-		 *
-		 *Si Cmax = B' :
-		 *H = 60*(((R'-G')/delta) +4)
+		 * 1- Conversion RGB => HSV
+		 * 2- Calcul modification du H (avec les données déjà présentes en S et V)
+		 * 3- Pour chaque pixel, conversion HSV => RGB
 		 * 
-		 * Ref : http://www.rapidtables.com/convert/color/rgb-to-hsv.htm
-		 * 
-		 */ 
+		 */
 		
-		double hue;
-		
-		double rPrime = red / 255;
-		double gPrime = green / 255;
-		double bPrime = blue / 255;
-		
-		double cmax = setTripleMax(rPrime,gPrime,bPrime);
-		double cmin = setTripleMin(rPrime,gPrime,bPrime);
-		double delta = cmax - cmin;
-		
-		if(cmax == rPrime){
-			hue = 60*(((gPrime-bPrime) / delta) %6); 
-		}
-		else if(cmax == gPrime){
-			hue = 60*(((bPrime-rPrime) / delta) +2);
-		}
-		else {
-			hue = 60*(((rPrime-gPrime) / delta) +4);
-		}
+			
 //		
 //		Pixel p = new Pixel(red, green, blue, 255); 
 //		for (int i = 0; i<imagesWidth; ++i) {
@@ -145,24 +129,12 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		}
 	}
 	
-	public void computeSaturationImage(int red, int green, int blue) {
+	public void computeSaturationImage(int var_hue, int var_saturation, int var_value) {
+		
 		/*
-		 *R' = R/255
-		 *G' = G/255
-		 *B' = B/255
-		 *
-		 *Cmax = max(R',G',B')
-		 *Cmin = min(R',G',B')
-		 *
-		 *delta = Cmax-Cmin
-		 *
-		 * Si Cmax = 0 :
-		 * S = 0
-		 * 
-		 * Si Cmax !=0 :
-		 * S = delta/Cmax
-		 * 
-		 * http://www.rapidtables.com/convert/color/rgb-to-hsv.htm
+		 * 1- Conversion RGB => HSV
+		 * 2- Calcul modification du S (avec les données déjà présentes en H et V)
+		 * 3- Pour chaque pixel, conversion HSV => RGB
 		 */
 		
 		Pixel p = new Pixel(red, green, blue, 255); 
@@ -178,18 +150,13 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		}
 	}
 	
-	public void computeValueImage(int red, int green, int blue) {
+	public void computeValueImage(int var_hue, int var_saturation, int var_value) {
 		/*
-		 *R' = R/255
-		 *G' = G/255
-		 *B' = B/255
-		 *
-		 *Cmax = max(R',G',B')
-		 *
-		 * V = Cmax
-		 * 
-		 * http://www.rapidtables.com/convert/color/rgb-to-hsv.htm
+		 * 1- Conversion RGB => HSV
+		 * 2- Calcul modification du V (avec les données déjà présentes en H et S)
+		 * 3- Pour chaque pixel, conversion HSV => RGB
 		 */
+		
 		
 		Pixel p = new Pixel(red, green, blue, 255); 
 		for (int i = 0; i<imagesWidth; ++i) {
@@ -324,6 +291,119 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		}		
 		return low;
 	}
+	
+	private double[] convertHSV_to_RGB(double h, double s, double v){
+	
+		/*
+		 * This color conversion algorithm is taken from http://www.easyrgb.com/index.php?X=MATH&H=21#text21
+		 * It has been adapted to java format for this method.
+		 * 
+		 */
+		
+			double r;
+			double g;
+			double b;
+			
+			double var_r; 
+			double var_g;
+			double var_b;
+			
+		if ( s == 0 )                       //HSV from 0 to 1
+		{
+		   r = v * 255;
+		   g = v * 255;
+		   b = v * 255;
+		}
+		else
+		{
+		   double var_h = h * 6;
+		   if ( var_h == 6 ) var_h = 0;      //H must be < 1
+		   double var_i = var_h;             //Or ... var_i = floor( var_h )
+		   double var_1 = v * ( 1 - s );
+		   double var_2 = v * ( 1 - s * ( var_h - var_i ) );
+		   double var_3 = v * ( 1 - s * ( 1 - ( var_h - var_i ) ) );
+	
+		   if      ( var_i == 0 ) { 
+			   var_r = v;
+			   var_g = var_3;
+			   var_b = var_1;
+			   }
+		   else if ( var_i == 1 ) { 
+			   var_r = var_2;
+			   var_g = v;
+			   var_b = var_1;
+			   }
+		   else if ( var_i == 2 ) { 
+			   var_r = var_1;
+			   var_g = v;
+			   var_b = var_3;
+			   }
+		   else if ( var_i == 3 ) { 
+			   var_r = var_1;
+			   var_g = var_2;
+			   var_b = v;
+			   }
+		   else if ( var_i == 4 ) { 
+			   var_r = var_3;
+			   var_g = var_1;
+			   var_b = v;
+			   }
+		   else { 
+			   var_r = v;
+			   var_g = var_1;
+			   var_b = var_2; 
+			   }
+	
+		  r = var_r * 255;                  //RGB results from 0 to 255
+		  g = var_g * 255;
+		  b = var_b * 255;
+		}
+		double[] rgbcolor = {r,g,b};
+		
+		return rgbcolor;
+	}
+	
+	private double[] convertRGB_to_HSV(double r, double g, double b){
+
+
+		double var_R = ( r / 255 );                     //RGB from 0 to 255
+		double var_G = ( g / 255 );
+		double var_B = ( b / 255 );
+
+		double var_Min = setTripleMin( var_R, var_G, var_B );    //Min. value of RGB
+		double var_Max = setTripleMax( var_R, var_G, var_B );    //Max. value of RGB
+		double del_Max = var_Max - var_Min;             //Delta RGB value
+
+		double V = var_Max;
+		double H = 0;
+		double S = 0;
+
+		if ( del_Max == 0 )                     //This is a gray, no chroma...
+		{
+			H = 0;                               //HSV results from 0 to 1
+			S = 0;
+		}
+		else                                    //Chromatic data...
+		{
+			S = del_Max / var_Max;
+
+			double del_R = ( ( ( var_Max - var_R ) / 6 ) + ( del_Max / 2 ) ) / del_Max;
+			double del_G = ( ( ( var_Max - var_G ) / 6 ) + ( del_Max / 2 ) ) / del_Max;
+			double del_B = ( ( ( var_Max - var_B ) / 6 ) + ( del_Max / 2 ) ) / del_Max;
+
+			if      ( var_R == var_Max ) H = del_B - del_G;
+			else if ( var_G == var_Max ) H = ( 1 / 3 ) + del_R - del_B;
+			else if ( var_B == var_Max ) H = ( 2 / 3 ) + del_G - del_R;
+
+			if ( H < 0 ) H += 1;
+			if ( H > 1 ) H -= 1;
+		}
+
+		double[] hsvcolor = {H,S,V};
+
+		return hsvcolor;
+	}
+	
 
 }
 
