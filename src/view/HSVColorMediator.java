@@ -114,16 +114,20 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		 * 
 		 */
 		
-			
+		//Ici, on ne fait que modifier le hue à chaque passe. 
+		//Les S et V reste des constantes pour la boucle au complet.
+		
+		
+		
 //		
-//		Pixel p = new Pixel(red, green, blue, 255); 
-//		for (int i = 0; i<imagesWidth; ++i) {
-//			p.setRed((int)(((double)i / (double)imagesWidth)*255.0)); 
-//			int rgb = p.getARGB();
-//			for (int j = 0; j<imagesHeight; ++j) {
-//				redImage.setRGB(i, j, rgb);
-//			}
-//		}
+		Pixel p = new Pixel(red, green, blue, 255); 
+		for (int i = 0; i<imagesWidth; ++i) {
+			p.setRed((int)(((double)i / (double)imagesWidth)*255.0)); 
+			int rgb = p.getARGB();
+			for (int j = 0; j<imagesHeight; ++j) {
+				redImage.setRGB(i, j, rgb);
+			}
+		}
 		if (hCS != null) {
 			hCS.update(redImage);
 		}

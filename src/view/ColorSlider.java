@@ -73,6 +73,13 @@ public class ColorSlider extends JPanel implements ColorSliderArrowObserver {
 		}
 	}
 	
+	public void setArrowPosition(int v){
+
+		colorSliderArrow.setValue(v);
+		colorSliderArrow.setArrow(v);
+
+	}
+	
 	public int getValue() {
 		return colorSliderArrow.getValue();
 	}
@@ -159,6 +166,11 @@ class ColorSliderArrow extends JPanel implements MouseListener, MouseMotionListe
 			ColorSliderArrowObserver o = (ColorSliderArrowObserver)i.next();
 			o.update(getValue());
 		}
+		repaint();
+	}
+	
+	public void setArrow(int value) {
+		this.value = value;
 		repaint();
 	}
 	

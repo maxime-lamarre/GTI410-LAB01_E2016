@@ -16,6 +16,7 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,9 +41,9 @@ import model.Pixel;
 public class ColorDialog extends JDialog {
 	private JButton okButton;
 	private RGBColorMediator rgbMediator;
+	private CMYKColorMediator cmykMediator;
 	private ActionListener okActionListener;
 	private ColorDialogResult result;
-	private HSVColorMediator hsvmediator;
 	
 	static public Pixel getColor(Frame owner, Pixel color, int imageWidths) {
 		ColorDialogResult result = new ColorDialogResult(color);
@@ -118,29 +119,35 @@ public class ColorDialog extends JDialog {
 	}
 	
 	private JPanel createCMYKPanel(ColorDialogResult result, int imageWidths) {	
+		cmykMediator = new CMYKColorMediator(result, imageWidths, 30);
+		
 		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		
+		ColorSlider csCyan = new ColorSlider("C:", result.getPixel().getRed(), cmykMediator.getCyanImage());
+		ColorSlider csMagenta = new ColorSlider("M:", result.getPixel().getGreen(), cmykMediator.getMagentaImage());
+		ColorSlider csYellow = new ColorSlider("Y:", result.getPixel().getBlue(), cmykMediator.getYellowImage());
+		ColorSlider csBlack = new ColorSlider("B:", 0, cmykMediator.getBlackImage());
+		
+		cmykMediator.setCyanCS(csCyan);
+		cmykMediator.computeCyanImage(1.0, 0.0, 0.0,0.0);
+		cmykMediator.setMagentaCS(csMagenta);
+		cmykMediator.computeMagentaImage(0.0, 1.0, 0.0,0.0);
+		cmykMediator.setYellowCS(csYellow);
+		cmykMediator.computeYellowImage(0.0, 0.0, 1.0,0.0);
+		cmykMediator.setBlackCS(csBlack);
+		
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		panel.add(csCyan);
+		panel.add(csMagenta);
+		panel.add(csYellow);
+		panel.add(csBlack);
 		
 		return panel;
 	}
 	
 	private JPanel createHSVPanel(ColorDialogResult result, int imageWidths) {	
-		hsvmediator = new HSVColorMediator(result, imageWidths, 30);
-		
 		JPanel panel = new JPanel();
-		
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		ColorSlider csH = new ColorSlider("H:", result.getPixel().getRed(), hsvmediator.getRedImage());
-		ColorSlider csS = new ColorSlider("S:", result.getPixel().getGreen(), hsvmediator.getGreenImage());
-		ColorSlider csV = new ColorSlider("V:", result.getPixel().getBlue(), hsvmediator.getBlueImage());
-		
-		hsvmediator.setHCS(csH);
-		hsvmediator.setSCS(csS);
-		hsvmediator.setVCS(csV);
-		
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		panel.add(csH);
-		panel.add(csS);
-		panel.add(csV);
 		
 		return panel;
 	}
