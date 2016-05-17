@@ -11,7 +11,7 @@
    You should have received a copy of the GNU General Public License
    along with j2dcg; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
+ */
 
 package view;
 
@@ -21,42 +21,43 @@ import model.ObserverIF;
 import model.Pixel;
 
 class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
-	
+
 	//Les trois sliders virtuels;
 	ColorSlider hCS;
 	ColorSlider sCS;
 	ColorSlider vCS;
-	
+
 	//Valeurs RGB
 	int red; //0-255
 	int green; //0-255
 	int blue; //0-255
-	
+
 	//Valeurs HSV
 	double hue; //0-360
 	double saturation; //0-1
 	double value; //0-1
-	
+
 	//Valeurs pour les constantes
 	private static final int H = 0;
 	private static final int S = 1;
 	private static final int V = 2;
-	
+
 	private static final int R = 0;
 	private static final int G = 1;
 	private static final int B = 2;
-	
+
 	//For testing only
+	boolean verboseUpdates = true;
 	boolean verbose = true;
 	boolean veryverbose = false;
-	
+
 	BufferedImage hueImage;
 	BufferedImage saturationImage;
 	BufferedImage valueImage;
 	int imagesWidth;
 	int imagesHeight;
 	ColorDialogResult result;
-	
+
 	HSVColorMediator(ColorDialogResult result, int imagesWidth, int imagesHeight) {
 		this.imagesWidth = imagesWidth;
 		this.imagesHeight = imagesHeight;
@@ -65,7 +66,7 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		this.blue = result.getPixel().getBlue();
 		this.result = result;
 		result.addObserver(this);
-		
+
 		hueImage = new BufferedImage(imagesWidth, imagesHeight, BufferedImage.TYPE_INT_ARGB);
 		saturationImage = new BufferedImage(imagesWidth, imagesHeight, BufferedImage.TYPE_INT_ARGB);
 		valueImage = new BufferedImage(imagesWidth, imagesHeight, BufferedImage.TYPE_INT_ARGB);
@@ -73,42 +74,44 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		computeSaturationImage(red, green, blue);
 		computeValueImage(red, green, blue); 	
 	}
-	
-	
+
+
 	/*
 	 * @see View.SliderObserver#update(double)
 	 */
 	public void update(ColorSlider s, int v) {
-		
+
 		double updatedValue;
 		String slider = "";
-		
-		
+
+
 		if(v != 0) {
 			updatedValue = (double)v/255;
 		}
 		else {
 			updatedValue = 0;
 		}
-		
+
 		boolean updateHue = false;
 		boolean updateSaturation = false;
 		boolean updateValue = false;
-		
+
 		//if (s == hCS && updatedValue != hue)
 		if (s == hCS){
 			hue = updatedValue;
+			updateHue = true;
 			updateSaturation = true;
-			updateValue = true;
-			
+			updateValue =true;
+
 			slider = "hue";
 		}
 		//if (s == sCS && updatedValue != saturation)
 		if (s == sCS) {
 			saturation = updatedValue;
 			updateHue = true;
-			updateValue = true;
-			
+			updateSaturation = true;
+			updateValue =true;
+
 			slider = "saturation";
 		}
 		//if (s == vCS && updatedValue != value)
@@ -116,15 +119,18 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 			value = updatedValue;
 			updateHue = true;
 			updateSaturation = true;
+			updateValue =true;
+			
 			slider = "value";
 		}
-		
+
 		double[] rgbfinal = convertHSV_to_RGB(hue,saturation,value);
-		
+
 		red = (int)rgbfinal[R];
 		green = (int)rgbfinal[G];
 		blue = (int)rgbfinal[B];
 		
+
 		if (updateHue) {
 			computeHueImage(hue,saturation,value);
 		}
@@ -134,25 +140,26 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		if (updateValue) {
 			computeValueImage(hue,saturation,value);
 		}
-				
+
 		Pixel pixel = new Pixel(red,green,blue, 255);
-		
+
 		if(verbose){		
-		System.out.println("The slider for " + slider + " has been updated.");	
-		System.out.println("The new colors are : "
-				+ "red -> " + red 
-				+ ", green -> " + green 
-				+ ", blue ->" +blue);
-		System.out.println("The HSV color is now : "
-				+ "hue -> " + hue 
-				+ ", saturation -> " + saturation 
-				+ ", value ->" +value);
+			System.out.println("The slider for " + slider + " has been updated.");	
+			System.out.println("The new colors are : "
+					+ "red -> " + red 
+					+ ", green -> " + green 
+					+ ", blue ->" +blue);
+			System.out.println("The HSV color is now : "
+					+ "hue -> " + hue 
+					+ ", saturation -> " + saturation 
+					+ ", value ->" +value);
+			System.out.println("=======================");
 		}
-		System.out.println("=======================");
 		
+
 		result.setPixel(pixel);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see model.ObserverIF#update()
 	 */
@@ -161,25 +168,32 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		// is aready properly set, there is no need to recompute the images.
 		Pixel currentColor = new Pixel(red, green, blue, 255);
 		if(currentColor.getARGB() == result.getPixel().getARGB()) return;
-		
+
 		red = result.getPixel().getRed();
 		green = result.getPixel().getGreen();
 		blue = result.getPixel().getBlue();
-		
+
 		double[] hsv = convertRGB_to_HSV(red,green,blue);
-		
+
+		if(verboseUpdates){
+			System.out.println("Color (RGB) is (" + red + ','+ green + ','+ blue + ')');
+			System.out.println("Color (HSV) is (" + hsv[H] + ','+ hsv[S] + ','+ hsv[V] + ')');
+		}
+
 		hCS.setValue((int)(hsv[H]*255));
-		sCS.setValue((int)(hsv[S]*255));
-		vCS.setValue((int)(hsv[V]*255));
-		
-		
-		
+		hCS.setArrowPosition((int)(hsv[H]*255));
 		computeHueImage(hsv[H],hsv[S],hsv[V]);
+
+		sCS.setValue((int)(hsv[S]*255));
+		sCS.setArrowPosition((int)(hsv[S]*255));
 		computeSaturationImage(hsv[H],hsv[S],hsv[V]);
+
+		vCS.setValue((int)(hsv[V]*255));
+		vCS.setArrowPosition((int)(hsv[V]*255));
 		computeValueImage(hsv[H],hsv[S],hsv[V]);
-		
-		
-		
+
+
+
 		// Efficiency issue: When the color is adjusted on a tab in the 
 		// user interface, the sliders color of the other tabs are recomputed,
 		// even though they are invisible. For an increased efficiency, the 
@@ -188,27 +202,27 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		// here since it would increase the complexity of the code, making it
 		// harder to understand.
 	}
-	
+
 	public void computeHueImage(double var_hue, double var_saturation, double var_value) { 
 
 		double currentVal;
 		double[] temprgb;
 		Pixel temp = new Pixel(red,green,blue,255);
-		
+
 		for (int i = 0; i<imagesWidth; ++i) {
-			
-			currentVal = ((double)i)/255;
+
+			currentVal = (((double)i)/imagesWidth); //Pour espacer le spectrum de Hue sur le largeur de l'image.
 			temprgb = convertHSV_to_RGB(currentVal, var_saturation, var_value);			
-			
+
 			if(veryverbose)	{System.out.println("Value for currentVal is now : " + currentVal);}
 			if(veryverbose)	{System.out.println("Value for temprgb is now : " + temprgb[R] +','+ temprgb[G] +','+ temprgb[B]);}
-			
+
 			temp.setRed((int)temprgb[R]);
 			temp.setGreen((int)temprgb[G]);
 			temp.setBlue((int)temprgb[B]);
-			
+
 			int rgb = temp.getARGB();
-			
+
 			//p.setRed((int)(((double)i / (double)imagesWidth)*255.0)); 
 			//int rgb = p.getARGB();
 			for (int j = 0; j<imagesHeight; ++j) {
@@ -219,9 +233,9 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 			hCS.update(hueImage);
 		}
 	}
-	
+
 	public void computeSaturationImage(double var_hue, double var_saturation, double var_value) {
-		
+
 		/*
 		 * 1- Conversion RGB => HSV
 		 * 2- Calcul modification du S (avec les données déjà présentes en H et V)
@@ -230,21 +244,21 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		double currentVal;
 		double[] temprgb;
 		Pixel temp = new Pixel(red,green,blue,255);
-		
+
 		for (int i = 0; i<imagesWidth; ++i) {
-			
+
 			currentVal = ((double)i)/255;				
 			temprgb = convertHSV_to_RGB(var_hue, currentVal, var_value);			
-			
+
 			if(veryverbose)	{System.out.println("Value for currentVal is now : " + currentVal);}
 			if(veryverbose)	{System.out.println("Value for temprgb is now : " + temprgb[R] +','+ temprgb[G] +','+ temprgb[B]);}
-			
+
 			temp.setRed((int)temprgb[R]);
 			temp.setGreen((int)temprgb[G]);
 			temp.setBlue((int)temprgb[B]);
-			
+
 			int rgb = temp.getARGB();
-			
+
 			for (int j = 0; j<imagesHeight; ++j) {
 				saturationImage.setRGB(i, j, rgb);
 			}
@@ -253,7 +267,7 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 			sCS.update(saturationImage);
 		}
 	}
-	
+
 	public void computeValueImage(double var_hue, double var_saturation, double var_value) {
 		/*
 		 * 1- Conversion RGB => HSV
@@ -263,21 +277,21 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		double currentVal;
 		double[] temprgb;
 		Pixel temp = new Pixel(red,green,blue,255);
-		
+
 		for (int i = 0; i<imagesWidth; ++i) {
-			
+
 			currentVal = ((double)i)/255;
 			temprgb = convertHSV_to_RGB(var_hue, var_saturation, currentVal);
-			
+
 			if(veryverbose)	{System.out.println("Value for currentVal is now : " + currentVal);}
 			if(veryverbose)	{System.out.println("Value for temprgb is now : " + temprgb[R] +','+ temprgb[G] +','+ temprgb[B]);}
-			
+
 			temp.setRed((int)temprgb[R]);
 			temp.setGreen((int)temprgb[G]);
 			temp.setBlue((int)temprgb[B]);
-			
+
 			int rgb = temp.getARGB();
-			
+
 			for (int j = 0; j<imagesHeight; ++j) {
 				valueImage.setRGB(i, j, rgb);
 			}
@@ -286,7 +300,7 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 			vCS.update(valueImage);
 		}
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -355,178 +369,193 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 	private double setTripleMax(double a, double b, double c){
 		return setDoubleMax(setDoubleMax(a,b),c);
 	}
-	
+
 	private double setTripleMin(double a, double b, double c){
 		return setDoubleMin(setDoubleMin(a,b),c);
 	}
-	
+
 	private double setDoubleMax(double a, double b){
-		
+
 		double high = a;
 		if (b>a){
 			high = b;
 		}		
 		return high;
 	}
-	
+
 	private double setDoubleMin(double a, double b){
-		
+
 		double low = a;
 		if (b<a){
 			low = b;
 		}		
 		return low;
 	}
-	
+
 	private double[] convertHSV_to_RGB(double h, double s, double v){
-	
+
 		/*
 		 * This color conversion algorithm is taken in part from http://www.easyrgb.com/index.php?X=MATH&H=21#text21
 		 * It has been adapted to java format for this method.
 		 * 
 		 */
-		
+
 		double hdeg = h * 360; //conversion de 0-1 a 0-360	
-		
-			double r;
-			double g;
-			double b;
-			
-			double var_r = 0; 
-			double var_g = 0;
-			double var_b = 0;
-			
+
+		double r;
+		double g;
+		double b;
+
+		double var_r = 0; 
+		double var_g = 0;
+		double var_b = 0;
+
 		if ( s == 0 )                       //HSV from 0 to 1
 		{
-		   r = v * 255;
-		   g = v * 255;
-		   b = v * 255;
+			r = v * 255;
+			g = v * 255;
+			b = v * 255;
 		}
 		else
 		{
-//		   double var_h = h * 6;
-//		   if ( var_h == 6 ) var_h = 0;      //H must be < 1
-//		   double var_i = var_h;             //Or ... var_i = floor( var_h )
-//		   //double var_1 = v * ( 1 - s );
-		   //double var_2 = v * ( 1 - s * ( var_h - var_i ) );
-		   //double var_3 = v * ( 1 - s * ( 1 - ( var_h - var_i ) ) );
-		   
+			//		   double var_h = h * 6;
+			//		   if ( var_h == 6 ) var_h = 0;      //H must be < 1
+			//		   double var_i = var_h;             //Or ... var_i = floor( var_h )
+			//		   //double var_1 = v * ( 1 - s );
+			//double var_2 = v * ( 1 - s * ( var_h - var_i ) );
+			//double var_3 = v * ( 1 - s * ( 1 - ( var_h - var_i ) ) );
+
 			if ( hdeg >= 360 ) hdeg = 0;
-			
-		   double C = v * s;
-		   double X = C * (1-Math.abs(((hdeg / 60)%2)-1));
-		   double m = v - C;
-		   
-		   if(hdeg >= 0 && hdeg <60){
-			   var_r = C;
-			   var_g = X;
-			   var_b = 0;
-		   }
-		   else if(hdeg >= 60 && hdeg <120){
-			   var_r = X;
-			   var_g = C;
-			   var_b = 0;
-		   }
-		   else if(hdeg >= 120 && hdeg <180){
-			   var_r = 0;
-			   var_g = C;
-			   var_b = X;
-		   }
-		   else if(hdeg >= 180 && hdeg <240){
-			   var_r = 0;
-			   var_g = X;
-			   var_b = C;
-		   }
-		   else if(hdeg >= 240 && hdeg <300){
-			   var_r = X;
-			   var_g = 0;
-			   var_b = C;
-		   }
-		   else if(hdeg >= 300 && hdeg <360){
-			   var_r = C;
-			   var_g = 0;
-			   var_b = X;
-		   }
-	
-		   r = (var_r + m) * 255;
-		   g = (var_g + m) * 255;
-		   b = (var_b + m) * 255;
-	
-//		   if      ( var_i <= 0 ) { 
-//			   var_r = v;
-//			   var_g = var_3;
-//			   var_b = var_1;
-//			   }
-//		   else if ( var_i <= 1 ) { 
-//			   var_r = var_2;
-//			   var_g = v;
-//			   var_b = var_1;
-//			   }
-//		   else if ( var_i <= 2 ) { 
-//			   var_r = var_1;
-//			   var_g = v;
-//			   var_b = var_3;
-//			   }
-//		   else if ( var_i <= 3 ) { 
-//			   var_r = var_1;
-//			   var_g = var_2;
-//			   var_b = v;
-//			   }
-//		   else if ( var_i <= 4 ) { 
-//			   var_r = var_3;
-//			   var_g = var_1;
-//			   var_b = v;
-//			   }
-//		   else { 
-//			   var_r = v;
-//			   var_g = var_1;
-//			   var_b = var_2; 
-//			   }
-	
-//		  r = var_r * 255;                  //RGB results from 0 to 255
-//		  g = var_g * 255;
-//		  b = var_b * 255;
+
+			double C = v * s;
+			double X = C * (1-Math.abs(((hdeg / 60)%2)-1));
+			double m = v - C;
+
+			if(hdeg >= 0 && hdeg <60){
+				var_r = C;
+				var_g = X;
+				var_b = 0;
+			}
+			else if(hdeg >= 60 && hdeg <120){
+				var_r = X;
+				var_g = C;
+				var_b = 0;
+			}
+			else if(hdeg >= 120 && hdeg <180){
+				var_r = 0;
+				var_g = C;
+				var_b = X;
+			}
+			else if(hdeg >= 180 && hdeg <240){
+				var_r = 0;
+				var_g = X;
+				var_b = C;
+			}
+			else if(hdeg >= 240 && hdeg <300){
+				var_r = X;
+				var_g = 0;
+				var_b = C;
+			}
+			else if(hdeg >= 300 && hdeg <360){
+				var_r = C;
+				var_g = 0;
+				var_b = X;
+			}
+
+			r = (var_r + m) * 255;
+			g = (var_g + m) * 255;
+			b = (var_b + m) * 255;
+
+			//		   if      ( var_i <= 0 ) { 
+			//			   var_r = v;
+			//			   var_g = var_3;
+			//			   var_b = var_1;
+			//			   }
+			//		   else if ( var_i <= 1 ) { 
+			//			   var_r = var_2;
+			//			   var_g = v;
+			//			   var_b = var_1;
+			//			   }
+			//		   else if ( var_i <= 2 ) { 
+			//			   var_r = var_1;
+			//			   var_g = v;
+			//			   var_b = var_3;
+			//			   }
+			//		   else if ( var_i <= 3 ) { 
+			//			   var_r = var_1;
+			//			   var_g = var_2;
+			//			   var_b = v;
+			//			   }
+			//		   else if ( var_i <= 4 ) { 
+			//			   var_r = var_3;
+			//			   var_g = var_1;
+			//			   var_b = v;
+			//			   }
+			//		   else { 
+			//			   var_r = v;
+			//			   var_g = var_1;
+			//			   var_b = var_2; 
+			//			   }
+
+			//		  r = var_r * 255;                  //RGB results from 0 to 255
+			//		  g = var_g * 255;
+			//		  b = var_b * 255;
 		}
 		double[] rgbcolor = {r,g,b};
-		
+
 		return rgbcolor;
 	}
-	
+
 	private double[] convertRGB_to_HSV(double r, double g, double b){
 
+		//Color calculations are taken from the Web.
+		//See here for more info : http://www.rapidtables.com/convert/color/rgb-to-hsv.htm
 
 		double var_R = ( r / 255 );                     //RGB from 0 to 255
 		double var_G = ( g / 255 );
 		double var_B = ( b / 255 );
+		
+		if(verboseUpdates){
+			System.out.println("Prime values are (" + var_R + ','+ var_G + ','+ var_B + ')' );
+		}
 
 		double var_Min = setTripleMin( var_R, var_G, var_B );    //Min. value of RGB
 		double var_Max = setTripleMax( var_R, var_G, var_B );    //Max. value of RGB
-		double del_Max = var_Max - var_Min;             //Delta RGB value
+		double delta_Max = var_Max - var_Min;             //Delta RGB value
 
+		if(verboseUpdates){
+			System.out.println("Delta values are (min/max/delta) : (" + var_Min + ','+ var_Max + ','+ delta_Max + ')' );
+		}
+		
 		double V = var_Max;
 		double H = 0;
 		double S = 0;
 
-		if ( del_Max == 0 )                     //This is a gray, no chroma...
+		if ( delta_Max == 0 )                     //This is a gray, no chroma...
 		{
 			H = 0;                               //HSV results from 0 to 1
 			S = 0;
 		}
 		else                                    //Chromatic data...
 		{
-			S = del_Max / var_Max;
-
-			double del_R = ( ( ( var_Max - var_R ) / 6 ) + ( del_Max / 2 ) ) / del_Max;
-			double del_G = ( ( ( var_Max - var_G ) / 6 ) + ( del_Max / 2 ) ) / del_Max;
-			double del_B = ( ( ( var_Max - var_B ) / 6 ) + ( del_Max / 2 ) ) / del_Max;
-
-			if      ( var_R == var_Max ) H = del_B - del_G;
-			else if ( var_G == var_Max ) H = ( 1 / 3 ) + del_R - del_B;
-			else if ( var_B == var_Max ) H = ( 2 / 3 ) + del_G - del_R;
-
-			if ( H < 0 ) H += 1;
-			if ( H > 1 ) H -= 1;
+			//Hue calculation
+			if(delta_Max == var_R){
+				H = 60 * (((var_G - var_B)/delta_Max)%6);
+			}
+			else if(delta_Max == var_G){
+				H = 60 * (((var_B - var_R)/delta_Max) + 2);
+			}
+			else if(delta_Max == var_B){
+				H = 60 * (((var_R - var_G)/delta_Max) + 4);
+			}
+			
+			//Saturation calculation
+			//No if here since S is dependant only on whether delta_Max 
+			//is 0 or not and the 0 case is covered above.
+			S = (delta_Max / var_Max);
 		}
+
+		H = H/360;
 
 		double[] hsvcolor = {H,S,V};
 
@@ -535,19 +564,19 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 
 	public int getHueFromRGB(int red, int green, int blue){
 		double[] HSV = convertRGB_to_HSV((double)red,(double)green,(double)blue);
-		
+
 		return (int)HSV[0];
 	}
-	
+
 	public int getSaturationFromRGB(int red, int green, int blue){
 		double[] HSV = convertRGB_to_HSV((double)red,(double)green,(double)blue);
-		
+
 		return (int)HSV[1];
 	}
-	
+
 	public int getValueFromRGB(int red, int green, int blue){
 		double[] HSV = convertRGB_to_HSV((double)red,(double)green,(double)blue);
-		
+
 		return (int)HSV[2];
 	}
 
