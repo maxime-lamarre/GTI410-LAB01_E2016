@@ -386,13 +386,15 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		 * 
 		 */
 		
+		double hdeg = h * 360; //conversion de 0-1 a 0-360	
+		
 			double r;
 			double g;
 			double b;
 			
-			double var_r; 
-			double var_g;
-			double var_b;
+			double var_r = 0; 
+			double var_g = 0;
+			double var_b = 0;
 			
 		if ( s == 0 )                       //HSV from 0 to 1
 		{
@@ -402,47 +404,88 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		}
 		else
 		{
-		   double var_h = h * 6;
-		   if ( var_h == 6 ) var_h = 0;      //H must be < 1
-		   double var_i = var_h;             //Or ... var_i = floor( var_h )
-		   double var_1 = v * ( 1 - s );
-		   double var_2 = v * ( 1 - s * ( var_h - var_i ) );
-		   double var_3 = v * ( 1 - s * ( 1 - ( var_h - var_i ) ) );
+//		   double var_h = h * 6;
+//		   if ( var_h == 6 ) var_h = 0;      //H must be < 1
+//		   double var_i = var_h;             //Or ... var_i = floor( var_h )
+//		   //double var_1 = v * ( 1 - s );
+		   //double var_2 = v * ( 1 - s * ( var_h - var_i ) );
+		   //double var_3 = v * ( 1 - s * ( 1 - ( var_h - var_i ) ) );
+		   
+			if ( hdeg >= 360 ) hdeg = 0;
+			
+		   double C = v * s;
+		   double X = C * (1-Math.abs(((hdeg / 60)%2)-1));
+		   double m = v - C;
+		   
+		   if(hdeg >= 0 && hdeg <60){
+			   var_r = C;
+			   var_g = X;
+			   var_b = 0;
+		   }
+		   else if(hdeg >= 60 && hdeg <120){
+			   var_r = X;
+			   var_g = C;
+			   var_b = 0;
+		   }
+		   else if(hdeg >= 120 && hdeg <180){
+			   var_r = 0;
+			   var_g = C;
+			   var_b = X;
+		   }
+		   else if(hdeg >= 180 && hdeg <240){
+			   var_r = 0;
+			   var_g = X;
+			   var_b = C;
+		   }
+		   else if(hdeg >= 240 && hdeg <300){
+			   var_r = X;
+			   var_g = 0;
+			   var_b = C;
+		   }
+		   else if(hdeg >= 300 && hdeg <360){
+			   var_r = C;
+			   var_g = 0;
+			   var_b = X;
+		   }
 	
-		   if      ( var_i <= 0 ) { 
-			   var_r = v;
-			   var_g = var_3;
-			   var_b = var_1;
-			   }
-		   else if ( var_i <= 1 ) { 
-			   var_r = var_2;
-			   var_g = v;
-			   var_b = var_1;
-			   }
-		   else if ( var_i <= 2 ) { 
-			   var_r = var_1;
-			   var_g = v;
-			   var_b = var_3;
-			   }
-		   else if ( var_i <= 3 ) { 
-			   var_r = var_1;
-			   var_g = var_2;
-			   var_b = v;
-			   }
-		   else if ( var_i <= 4 ) { 
-			   var_r = var_3;
-			   var_g = var_1;
-			   var_b = v;
-			   }
-		   else { 
-			   var_r = v;
-			   var_g = var_1;
-			   var_b = var_2; 
-			   }
+		   r = (var_r + m) * 255;
+		   g = (var_g + m) * 255;
+		   b = (var_b + m) * 255;
 	
-		  r = var_r * 255;                  //RGB results from 0 to 255
-		  g = var_g * 255;
-		  b = var_b * 255;
+//		   if      ( var_i <= 0 ) { 
+//			   var_r = v;
+//			   var_g = var_3;
+//			   var_b = var_1;
+//			   }
+//		   else if ( var_i <= 1 ) { 
+//			   var_r = var_2;
+//			   var_g = v;
+//			   var_b = var_1;
+//			   }
+//		   else if ( var_i <= 2 ) { 
+//			   var_r = var_1;
+//			   var_g = v;
+//			   var_b = var_3;
+//			   }
+//		   else if ( var_i <= 3 ) { 
+//			   var_r = var_1;
+//			   var_g = var_2;
+//			   var_b = v;
+//			   }
+//		   else if ( var_i <= 4 ) { 
+//			   var_r = var_3;
+//			   var_g = var_1;
+//			   var_b = v;
+//			   }
+//		   else { 
+//			   var_r = v;
+//			   var_g = var_1;
+//			   var_b = var_2; 
+//			   }
+	
+//		  r = var_r * 255;                  //RGB results from 0 to 255
+//		  g = var_g * 255;
+//		  b = var_b * 255;
 		}
 		double[] rgbcolor = {r,g,b};
 		
