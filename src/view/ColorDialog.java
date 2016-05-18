@@ -190,10 +190,12 @@ cmykMediator = new CMYKColorMediator(result, imageWidths, 30);
 		double var_s = hsvmediator.getSaturationFromRGB(var_r, var_g, var_b);
 		double var_v = hsvmediator.getValueFromRGB(var_r, var_g, var_b);
 		
+		System.out.println(var_h);
+		
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		ColorSlider csH = new ColorSlider("H:", (int)(var_h*imageWidths), hsvmediator.getHueImage());
-		ColorSlider csS = new ColorSlider("S:", (int)(var_s*imageWidths), hsvmediator.getSaturationImage());
-		ColorSlider csV = new ColorSlider("V:", (int)(var_v*imageWidths), hsvmediator.getValueImage());
+		ColorSlider csH = new ColorSlider("H:", (int)(var_h*255), hsvmediator.getHueImage());
+		ColorSlider csS = new ColorSlider("S:", (int)(var_s*255), hsvmediator.getSaturationImage());
+		ColorSlider csV = new ColorSlider("V:", (int)(var_v*255), hsvmediator.getValueImage());
 
 		hsvmediator.setHCS(csH);
 		hsvmediator.setSCS(csS);

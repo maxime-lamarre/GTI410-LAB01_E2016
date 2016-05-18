@@ -65,12 +65,16 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		this.green = result.getPixel().getGreen();
 		this.blue = result.getPixel().getBlue();
 		
+		if(verbose) {System.out.println("Initial colors (RGB) : "+red+','+green+','+blue+')');}
+
 		double[] hsv = convertRGB_to_HSV(red,green,blue);
-		
+
 		hue = hsv[H];
 		saturation = hsv[S];
 		value = hsv[V];
-		
+
+		if(verbose) {System.out.println("Initial colors (HSV) : "+hue+','+saturation+','+value+')');}
+
 		this.result = result;
 		result.addObserver(this);
 
@@ -79,7 +83,10 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		valueImage = new BufferedImage(imagesWidth, imagesHeight, BufferedImage.TYPE_INT_ARGB);
 		computeHueImage(hsv[H],hsv[S],hsv[V]);
 		computeSaturationImage(hsv[H],hsv[S],hsv[V]);
-		computeValueImage(hsv[H],hsv[S],hsv[V]); 	
+		computeValueImage(hsv[H],hsv[S],hsv[V]);
+		
+		update();
+		
 	}
 
 
@@ -90,7 +97,6 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 
 		double updatedValue;
 		String slider = "";
-
 
 		if(v != 0) {
 			updatedValue = (double)v/255;
@@ -127,7 +133,7 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 			updateHue = true;
 			updateSaturation = true;
 			//updateValue =true;
-			
+
 			slider = "value";
 		}
 
@@ -136,7 +142,7 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		red = (int)rgbfinal[R];
 		green = (int)rgbfinal[G];
 		blue = (int)rgbfinal[B];
-		
+
 
 		if (updateHue) {
 			computeHueImage(hue,saturation,value);
@@ -162,7 +168,7 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 					+ ", value ->" +value);
 			System.out.println("=======================");
 		}
-		
+
 
 		result.setPixel(pixel);
 	}
@@ -181,7 +187,7 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		blue = result.getPixel().getBlue();
 
 		double[] hsv = convertRGB_to_HSV(red,green,blue);
-		
+
 		hue = hsv[H];
 		saturation = hsv[S];
 		value = hsv[V];
@@ -191,16 +197,18 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 			System.out.println("Color (HSV) is (" + hsv[H] + ','+ hsv[S] + ','+ hsv[V] + ')');
 		}
 
-		hCS.setValue((int)(hue*imagesWidth));
-		hCS.setArrowPosition((int)(hue*imagesWidth));
+		hCS.setValue((int)(hue*255));
+		hCS.setArrowPosition((int)(hue*255));
 		computeHueImage(hue,saturation,value);
+		
+		if(verboseUpdates){System.out.println("Hue position is : "+ (int)(hue*255));}
 
-		sCS.setValue((int)(saturation*imagesWidth));
-		sCS.setArrowPosition((int)(saturation*imagesWidth));
+		sCS.setValue((int)(saturation*255));
+		sCS.setArrowPosition((int)(saturation*255));
 		computeSaturationImage(hue,saturation,value);
 
-		vCS.setValue((int)(value*imagesWidth));
-		vCS.setArrowPosition((int)(value*imagesWidth));
+		vCS.setValue((int)(value*255));
+		vCS.setArrowPosition((int)(value*255));
 		computeValueImage(hue,saturation,value);
 
 
@@ -481,10 +489,10 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		//Color calculations are taken from the Web.
 		//See here for more info : http://www.rapidtables.com/convert/color/rgb-to-hsv.htm
 
-		double var_R = ( r / 255 );                     //RGB from 0 to 255
-		double var_G = ( g / 255 );
-		double var_B = ( b / 255 );
-		
+		double var_R = ( r / 255.0 );                     //RGB from 0 to 255
+		double var_G = ( g / 255.0 );
+		double var_B = ( b / 255.0 );
+
 		if(verboseUpdates){
 			System.out.println("Prime values are (" + var_R + ','+ var_G + ','+ var_B + ')' );
 		}
@@ -496,58 +504,59 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		if(verboseUpdates){
 			System.out.println("Delta values are (min/max/delta) : (" + var_Min + ','+ var_Max + ','+ delta_Max + ')' );
 		}
-		
-		double V = var_Max;
-		double H;
-		double S;
 
-		if ( delta_Max == 0 )                     //This is a gray, no chroma...
+		double V = var_Max;
+		double H=0.0;
+		double S=0.0;
+
+		if ( delta_Max == 0.0 )                     //This is a gray, no chroma...
 		{
-			H = 0;                               //HSV results from 0 to 1
-			S = 0;
+			H = 0.0;                               //HSV results from 0 to 1
 		}
 		else                                    //Chromatic data...
 		{
-			//Hue calculation
-			if(delta_Max == var_R){
-				H = 60 * (((var_G - var_B)/delta_Max)%6);
-			}
-			else if(delta_Max == var_G){
-				H = 60 * (((var_B - var_R)/delta_Max) + 2);
-			}
-			else { //indique que le delta_Max est var_B
-				H = 60 * (((var_R - var_G)/delta_Max) + 4);
-			}
-			
-			//Saturation calculation
-			//No if here since S is dependant only on whether delta_Max 
-			//is 0 or not and the 0 case is covered above.
-			S = (delta_Max / var_Max);
+			if(var_Max != 0.0){S = (delta_Max / var_Max);}
+			else {S = 0.0;}
+
+			double del_R = ( ( ( var_Max - var_R ) / 6.0 ) + ( delta_Max / 2.0 ) ) / delta_Max;
+			double del_G = ( ( ( var_Max - var_G ) / 6.0 ) + ( delta_Max / 2.0 ) ) / delta_Max;
+			double del_B = ( ( ( var_Max - var_B ) / 6.0 ) + ( delta_Max / 2.0 ) ) / delta_Max;
+
+			if      ( var_R == var_Max ) H = del_B - del_G;
+			else if ( var_G == var_Max ) H = ( 1.0 / 3.0 ) + del_R - del_B;
+			else if ( var_B == var_Max ) H = ( 2.0 / 3.0 ) + del_G - del_R;
+
+			if ( H < 0.0 ) H += 1.0;
+			if ( H > 1.0 ) H -= 1.0;		
+
 		}
 
-		H = Math.abs(H/360);
+		H = Math.abs(H);
 
+		if(verboseUpdates) {System.out.println("Hue is now : " + H);}
+				
 		double[] hsvcolor = {H,S,V};
 
 		return hsvcolor;
 	}
 
-	public int getHueFromRGB(int red, int green, int blue){
+	public double getHueFromRGB(int red, int green, int blue){
 		double[] HSV = convertRGB_to_HSV((double)red,(double)green,(double)blue);
 
-		return (int)HSV[0];
+			
+		return HSV[0];
 	}
 
-	public int getSaturationFromRGB(int red, int green, int blue){
+	public double getSaturationFromRGB(int red, int green, int blue){
 		double[] HSV = convertRGB_to_HSV((double)red,(double)green,(double)blue);
 
-		return (int)HSV[1];
+		return HSV[1];
 	}
 
-	public int getValueFromRGB(int red, int green, int blue){
+	public double getValueFromRGB(int red, int green, int blue){
 		double[] HSV = convertRGB_to_HSV((double)red,(double)green,(double)blue);
 
-		return (int)HSV[2];
+		return HSV[2];
 	}
 
 }
