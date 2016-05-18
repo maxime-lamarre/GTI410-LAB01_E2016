@@ -120,30 +120,60 @@ public class ColorDialog extends JDialog {
 	}
 
 	private JPanel createCMYKPanel(ColorDialogResult result, int imageWidths) {	
-		cmykMediator = new CMYKColorMediator(result, imageWidths, 30);
-
+cmykMediator = new CMYKColorMediator(result, imageWidths, 30);
+		
+		Double redD, greenD, blueD, cyan, magenta, yellow, tempo;
+		Double black = 0.0;
+		
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-		ColorSlider csCyan = new ColorSlider("C:", result.getPixel().getRed(), cmykMediator.getCyanImage());
-		ColorSlider csMagenta = new ColorSlider("M:", result.getPixel().getGreen(), cmykMediator.getMagentaImage());
-		ColorSlider csYellow = new ColorSlider("Y:", result.getPixel().getBlue(), cmykMediator.getYellowImage());
-		ColorSlider csBlack = new ColorSlider("B:", 0, cmykMediator.getBlackImage());
-
+		
+		redD = (double) (result.getPixel().getRed() / 255.0);
+		greenD = (double) (result.getPixel().getGreen() / 255.0);
+		blueD = (double) (result.getPixel().getBlue() / 255.0);
+		
+		if ((redD <= greenD) && (redD <= blueD)) black = 0.0 + redD;
+		if ((greenD <= redD) && (greenD <= blueD)) black = 0.0 + greenD;
+		if ((blueD <= redD) && (blueD <= greenD)) black = 0.0 + blueD;
+		
+		cyan = (1.0 - redD - black) / (1.0 - black);
+		magenta = (1.0 - greenD - black) / (1.0 - black);
+		yellow = (1.0 - blueD - black) / (1.0 - black);
+		
+		if ((cyan <= magenta) && (cyan <= yellow)) black = 0.0 + cyan;
+		if ((magenta <= cyan) && (magenta <= yellow)) black = 0.0 + magenta;
+		if ((yellow <= cyan) && (yellow <= magenta)) black = 0.0 + yellow;
+		
+		tempo = cyan * 255;
+		ColorSlider csCyan = new ColorSlider("C:", tempo.intValue(), cmykMediator.getCyanImage());
+		tempo = magenta * 255;
+		ColorSlider csMagenta = new ColorSlider("M:", tempo.intValue(), cmykMediator.getMagentaImage());
+		tempo = yellow * 255;
+		ColorSlider csYellow = new ColorSlider("Y:", tempo.intValue(), cmykMediator.getYellowImage());
+		tempo = black * 255;
+		ColorSlider csBlack = new ColorSlider("B:", tempo.intValue(), cmykMediator.getBlackImage());
+		
 		cmykMediator.setCyanCS(csCyan);
-		cmykMediator.computeCyanImage(1.0, 0.0, 0.0,0.0);
+		cmykMediator.setCyan(cyan);
+		cmykMediator.computeCyanImage(cyan, magenta, yellow,black);
 		cmykMediator.setMagentaCS(csMagenta);
-		cmykMediator.computeMagentaImage(0.0, 1.0, 0.0,0.0);
+		cmykMediator.setMangenta(magenta);
+		cmykMediator.computeMagentaImage(cyan, magenta, yellow,black);
 		cmykMediator.setYellowCS(csYellow);
-		cmykMediator.computeYellowImage(0.0, 0.0, 1.0,0.0);
+		cmykMediator.setYellow(yellow);
+		cmykMediator.computeYellowImage(cyan, magenta, yellow,black);
 		cmykMediator.setBlackCS(csBlack);
-
+		cmykMediator.setBlack(black);
+		cmykMediator.computeBlackImage(cyan, magenta, yellow, black);
+		
+		//System.out.println("C: "+cyan+" M: "+magenta+" Y: "+yellow+" B: "+black);
+				
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		panel.add(csCyan);
 		panel.add(csMagenta);
 		panel.add(csYellow);
 		panel.add(csBlack);
-
+		
 		return panel;
 	}
 
@@ -152,10 +182,18 @@ public class ColorDialog extends JDialog {
 
 		JPanel panel = new JPanel();
 		
+		int var_r = result.getPixel().getRed();
+		int var_g = result.getPixel().getGreen();
+		int var_b = result.getPixel().getBlue();
+		
+		double var_h = hsvmediator.getHueFromRGB(var_r, var_g, var_b);
+		double var_s = hsvmediator.getSaturationFromRGB(var_r, var_g, var_b);
+		double var_v = hsvmediator.getValueFromRGB(var_r, var_g, var_b);
+		
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		ColorSlider csH = new ColorSlider("H:", result.getPixel().getRed(), hsvmediator.getHueImage());
-		ColorSlider csS = new ColorSlider("S:", result.getPixel().getGreen(), hsvmediator.getSaturationImage());
-		ColorSlider csV = new ColorSlider("V:", result.getPixel().getBlue(), hsvmediator.getValueImage());
+		ColorSlider csH = new ColorSlider("H:", (int)(var_h*imageWidths), hsvmediator.getHueImage());
+		ColorSlider csS = new ColorSlider("S:", (int)(var_s*imageWidths), hsvmediator.getSaturationImage());
+		ColorSlider csV = new ColorSlider("V:", (int)(var_v*imageWidths), hsvmediator.getValueImage());
 
 		hsvmediator.setHCS(csH);
 		hsvmediator.setSCS(csS);

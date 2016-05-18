@@ -41,10 +41,10 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 		magentaImage = new BufferedImage(imagesWidth, imagesHeight, BufferedImage.TYPE_INT_ARGB);
 		yellowImage = new BufferedImage(imagesWidth, imagesHeight, BufferedImage.TYPE_INT_ARGB);
 		blackImage = new BufferedImage(imagesWidth, imagesHeight, BufferedImage.TYPE_INT_ARGB);
-		computeCyanImage(1.0, 0.0, 0.0, 0.0);
-		computeMagentaImage(0.0, 1.0, 0.0, 0.0);
-		computeYellowImage(0.0, 0.0, 1.0, 0.0); 
-		computeBlackImage(0.0, 0.0, 0.0, 0.0);
+		//computeCyanImage(1.0, 0.0, 0.0, 0.0);
+		//computeMagentaImage(0.0, 1.0, 0.0, 0.0);
+		//computeYellowImage(0.0, 0.0, 1.0, 0.0); 
+		//computeBlackImage(0.0, 0.0, 0.0, 0.0);
 	}
 	
 	
@@ -117,7 +117,7 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 			green = (int) (255 * (1-magenta) * (1-black));
 			blue = (int) (255 * (1-yellow) * (1-black));
 						
-			cyanCS.setValue(255-red);
+			cyanCS.setValue(256-red);
 			cyanCS.setArrowPosition(255-red);
 			
 			magentaCS.setValue(255-green);
@@ -142,13 +142,12 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 		blackCS.setValue(tempo);
 		blackCS.setArrowPosition(tempo);
 		
-		Pixel pixel = new Pixel(red, green, blue, 255);
-		result.setPixel(pixel);
-		
 		red = (int) (255 * (1-cyan) * (1-black));
 		green = (int) (255 * (1-magenta) * (1-black));
 		blue = (int) (255 * (1-yellow) * (1-black));
-			
+		
+		Pixel pixel = new Pixel(red, green, blue, 255);
+		result.setPixel(pixel);
 	}
 	
 	private int maxValue(int red, int green, int blue) {
@@ -189,6 +188,9 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 		}
 		if (blackCS != null) {
 			blackCS.update(blackImage);
+			tempo = (int) maxValueDouble(cyanC, magentaC, yellowC) * 255;
+			blackCS.setValue(tempo);
+			blackCS.setArrowPosition(tempo);
 		}
 	}
 	
@@ -212,6 +214,7 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 		if (cyanCS != null) {
 			cyanCS.update(cyanImage);
 		}
+		
 	}
 	
 	public void computeMagentaImage (Double cyanC, Double magentaC, Double yellowC, Double blackC) {
@@ -234,6 +237,7 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 		if (magentaCS != null) {
 			magentaCS.update(magentaImage);
 		}
+		
 	}
 	
 	public void computeYellowImage (Double cyanC, Double magentaC, Double yellowC, Double blackC) { 
@@ -255,6 +259,7 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 		if (yellowCS != null) {
 			yellowCS.update(yellowImage);
 		}
+		
 	}
 	
 	/**
@@ -386,7 +391,6 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 		computeCyanImage(cyan, magenta, yellow, black);
 		computeMagentaImage(cyan, magenta, yellow, black);
 		computeYellowImage(cyan, magenta, yellow, black);
-
 		
 		// Efficiency issue: When the color is adjusted on a tab in the 
 		// user interface, the sliders color of the other tabs are recomputed,
@@ -395,6 +399,22 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 		// change in the user interface. This solution was not implemented
 		// here since it would increase the complexity of the code, making it
 		// harder to understand.
+	}
+	
+	public void setCyan(Double cyan) {
+		this.cyan = 0.0 + cyan;
+	}
+	
+	public void setMangenta(Double magenta) {
+		this.magenta = 0.0 + magenta;
+	}
+	
+	public void setYellow(Double yellow) {
+		this.yellow = 0.0 + yellow;
+	}
+	
+	public void setBlack(Double black) {
+		this.black = 0.0 + black;
 	}
 
 }

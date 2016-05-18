@@ -498,8 +498,8 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		}
 		
 		double V = var_Max;
-		double H = 0;
-		double S = 0;
+		double H;
+		double S;
 
 		if ( delta_Max == 0 )                     //This is a gray, no chroma...
 		{
@@ -515,7 +515,7 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 			else if(delta_Max == var_G){
 				H = 60 * (((var_B - var_R)/delta_Max) + 2);
 			}
-			else if(delta_Max == var_B){
+			else { //indique que le delta_Max est var_B
 				H = 60 * (((var_R - var_G)/delta_Max) + 4);
 			}
 			
