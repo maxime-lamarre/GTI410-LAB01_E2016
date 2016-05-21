@@ -39,6 +39,8 @@ public class ImageLineFiller extends AbstractTransformer {
 	private int saturationThreshold = 2;
 	private int valueThreshold = 3;
 	
+	private int stackValue = 0;
+	
 	/**
 	 * Creates an ImageLineFiller with default parameters.
 	 * Default pixel change color is black.
@@ -70,7 +72,8 @@ public class ImageLineFiller extends AbstractTransformer {
 				if (0 <= ptTransformed.x && ptTransformed.x < currentImage.getImageWidth() &&
 				    0 <= ptTransformed.y && ptTransformed.y < currentImage.getImageHeight()) {
 					currentImage.beginPixelUpdate();
-					horizontalLineFill(ptTransformed);
+					if (floodFill) horizontalLineFill(ptTransformed);
+					else newBorderFill(ptTransformed);		//Ajout : sélection de la methode de remplissage.
 					currentImage.endPixelUpdate();											 	
 					return true;
 				}
@@ -98,6 +101,7 @@ public class ImageLineFiller extends AbstractTransformer {
 				stack.push(nextRight);
 			}
 		}
+
 		// TODO EP In this method, we are creating many new Point instances. 
 		//      We could try to reuse as many as possible to be more efficient.
 		// TODO EP In this method, we could be creating many Point instances. 
@@ -105,6 +109,140 @@ public class ImageLineFiller extends AbstractTransformer {
 		//      class that uses shorts to cut the memory use.
 		// TODO EP In this method, we could test if a pixel needs to be filled before
 		//      adding it to the stack (to reduce memory needs and increase efficiency).
+	}
+	
+	private void newBorderFill(Point ptClicked) {
+		Stack<Point> stack = new Stack<Point>();
+		stack.push(ptClicked);
+		stackValue = 0;
+		while (!stack.empty()) {
+			Point current = (Point)stack.pop();
+			if (0 <= current.x && current.x < currentImage.getImageWidth() && 
+					0 <= current.y && current.y < currentImage.getImageHeight() &&
+						!currentImage.getPixel(current.x-1, current.y).equals(fillColor) &&
+							!currentImage.getPixel(current.x, current.y).equals(borderColor) 
+								&& stackValue < 3000) {
+				
+				currentImage.setPixel(current.x, current.y, fillColor);
+				
+				// Next points to fill.
+				if (!currentImage.getPixel(current.x-1, current.y).equals(borderColor) && 
+						!currentImage.getPixel(current.x-1, current.y).equals(fillColor)) {
+					Point nextLeft = new Point(current.x-1, current.y);
+					stack.push(nextLeft);
+				}
+				if (!currentImage.getPixel(current.x+1, current.y).equals(borderColor) &&
+						!currentImage.getPixel(current.x+1, current.y).equals(fillColor)) {
+					Point nextRight = new Point(current.x+1, current.y);
+					stack.push(nextRight);				
+				}
+
+				if (!currentImage.getPixel(current.x, current.y-1).equals(borderColor) &&
+						!currentImage.getPixel(current.x, current.y-1).equals(fillColor)) {
+					Point nextUp = new Point(current.x, current.y-1);
+					stack.push(nextUp);				
+				}
+
+				if (!currentImage.getPixel(current.x, current.y+1).equals(borderColor) &&
+						!currentImage.getPixel(current.x, current.y+1).equals(fillColor)) {
+					Point nextDown = new Point(current.x, current.y+1);
+					stack.push(nextDown);					
+				}
+				
+				if (!currentImage.getPixel(current.x-1, current.y-1).equals(borderColor) && 
+						!currentImage.getPixel(current.x-1, current.y-1).equals(fillColor)) {
+					Point nextLeft = new Point(current.x-1, current.y-1);
+					stack.push(nextLeft);
+				}
+				if (!currentImage.getPixel(current.x-1, current.y+1).equals(borderColor) &&
+						!currentImage.getPixel(current.x-1, current.y+1).equals(fillColor)) {
+					Point nextRight = new Point(current.x-1, current.y+1);
+					stack.push(nextRight);				
+				}
+
+				if (!currentImage.getPixel(current.x+1, current.y-1).equals(borderColor) &&
+						!currentImage.getPixel(current.x+1, current.y-1).equals(fillColor)) {
+					Point nextUp = new Point(current.x+1, current.y-1);
+					stack.push(nextUp);				
+				}
+
+				if (!currentImage.getPixel(current.x+1, current.y+1).equals(borderColor) &&
+						!currentImage.getPixel(current.x+1, current.y+1).equals(fillColor)) {
+					Point nextDown = new Point(current.x+1, current.y+1);
+					stack.push(nextDown);					
+				}
+				
+				borderFill(stack);
+			}
+		}
+
+	}
+	
+	private void borderFill(Stack<Point> stack) {
+		stackValue++;
+		
+		while (!stack.empty()) {
+			Point current = (Point)stack.pop();
+			if (0 <= current.x && current.x < currentImage.getImageWidth() && 
+					0 <= current.y && current.y < currentImage.getImageHeight() &&
+						!currentImage.getPixel(current.x-1, current.y).equals(fillColor) &&
+							!currentImage.getPixel(current.x, current.y).equals(borderColor) 
+								&& stackValue < 3000) {
+				
+				System.out.println("Stack value: "+stackValue+" X: "+current.x+" Y: "+current.y);
+				
+				currentImage.setPixel(current.x, current.y, fillColor);
+				
+				// Next points to fill.
+				if (!currentImage.getPixel(current.x-1, current.y).equals(borderColor) && 
+						!currentImage.getPixel(current.x-1, current.y).equals(fillColor)) {
+					Point nextLeft = new Point(current.x-1, current.y);
+					stack.push(nextLeft);
+				}
+				if (!currentImage.getPixel(current.x+1, current.y).equals(borderColor) &&
+						!currentImage.getPixel(current.x+1, current.y).equals(fillColor)) {
+					Point nextRight = new Point(current.x+1, current.y);
+					stack.push(nextRight);				
+				}
+
+				if (!currentImage.getPixel(current.x, current.y-1).equals(borderColor) &&
+						!currentImage.getPixel(current.x, current.y-1).equals(fillColor)) {
+					Point nextUp = new Point(current.x, current.y-1);
+					stack.push(nextUp);				
+				}
+
+				if (!currentImage.getPixel(current.x, current.y+1).equals(borderColor) &&
+						!currentImage.getPixel(current.x, current.y+1).equals(fillColor)) {
+					Point nextDown = new Point(current.x, current.y+1);
+					stack.push(nextDown);					
+				}
+				
+				if (!currentImage.getPixel(current.x-1, current.y-1).equals(borderColor) && 
+						!currentImage.getPixel(current.x-1, current.y-1).equals(fillColor)) {
+					Point nextLeft = new Point(current.x-1, current.y-1);
+					stack.push(nextLeft);
+				}
+				if (!currentImage.getPixel(current.x-1, current.y+1).equals(borderColor) &&
+						!currentImage.getPixel(current.x-1, current.y+1).equals(fillColor)) {
+					Point nextRight = new Point(current.x-1, current.y+1);
+					stack.push(nextRight);				
+				}
+
+				if (!currentImage.getPixel(current.x+1, current.y-1).equals(borderColor) &&
+						!currentImage.getPixel(current.x+1, current.y-1).equals(fillColor)) {
+					Point nextUp = new Point(current.x+1, current.y-1);
+					stack.push(nextUp);				
+				}
+
+				if (!currentImage.getPixel(current.x+1, current.y+1).equals(borderColor) &&
+						!currentImage.getPixel(current.x+1, current.y+1).equals(fillColor)) {
+					Point nextDown = new Point(current.x+1, current.y+1);
+					stack.push(nextDown);					
+				}
+				
+				borderFill(stack);
+			}
+		}
 	}
 	
 	/**
