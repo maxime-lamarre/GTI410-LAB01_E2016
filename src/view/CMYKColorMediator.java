@@ -146,7 +146,6 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 		green = (int) (255.0 * (1.0-magenta) * (1.0-black));
 		blue = (int) (255.0 * (1.0-yellow) * (1.0-black));
 		
-		System.out.println("Update slider - C: "+cyan+" M: "+magenta+" Y: "+yellow+" B: "+black);
 		
 		Pixel pixel = new Pixel(red, green, blue, 255);
 		result.setPixel(pixel);
@@ -169,8 +168,6 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 		if ((yellow <= cyan) && (yellow <= magenta)) black = 0.0 + yellow;
 		
 		if (black <= 0.0) black = 0.001;
-		
-		System.out.println("Min CMYK - C: "+cyan+" M: "+magenta+" Y: "+yellow+" B: "+black);
 		
 		return black;
 	}
@@ -410,10 +407,6 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 		computeMagentaImage(cyan, magenta, yellow, black);
 		computeYellowImage(cyan, magenta, yellow, black);
 		computeBlackImage(cyan, magenta, yellow, black);
-		
-		System.out.println("Update CYMK - R: "+red+" G: "+green+" B: "+blue);
-		System.out.println("Update CMYK - C: "+cyan+" M: "+magenta+" Y: "+yellow+" B: "+black);
-
 		
 		// Efficiency issue: When the color is adjusted on a tab in the 
 		// user interface, the sliders color of the other tabs are recomputed,
