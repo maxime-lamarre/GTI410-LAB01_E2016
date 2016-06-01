@@ -111,19 +111,9 @@ public class ImageLineFillerNew extends ImageLineFiller {
 		//      adding it to the stack (to reduce memory needs and increase efficiency).
 	}
 	
-	private void newBorderFill(Point myPoint) {
-		
-		stackValue = 0;
-		System.out.println("Filling points, get rdy for awesome.");
-		
-		boundaryFill(myPoint);
-		
-		
-	}
-	
-	public void boundaryFill(Point myPoint){
+	public void newBorderFill(Point myPoint){
 	    
-		//Inspired by http://stackoverflow.com/questions/23031087/stack-overflow-error-when-filling-a-shape-with-boundary-fill-algorithm
+		//Inspiré par : http://stackoverflow.com/questions/23031087/stack-overflow-error-when-filling-a-shape-with-boundary-fill-algorithm
 		
 		//Il faut créer un stack de point parce que si on ne fait que faire des appels récursifs, on overflow
 		//a chaque fois dès qu'il y a trop de pixels. Le problème arrive autour d'une profondeur de 3000 appels.
@@ -132,6 +122,7 @@ public class ImageLineFillerNew extends ImageLineFiller {
 		//On ajoute le premier point a la pile.
 	    points.add(myPoint);
 	    
+	    System.out.println("Filling points, get rdy for awesome.");
 	    System.out.println("On imprime avec 8 directions");
 
 	    //On va sortir les points un a un de la pile puis en prendre les coordonnées.
