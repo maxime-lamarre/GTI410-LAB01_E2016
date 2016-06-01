@@ -34,6 +34,7 @@ public class ImageLineFillerNew extends ImageLineFiller {
 	private ImageX currentImage;
 	private Pixel fillColor = new Pixel(0xFF00FFFF);
 	private Pixel borderColor = new Pixel(0xFFFFFF00);
+	private Pixel clickedColor = new Pixel(0xFFFFFFFF);
 	private boolean floodFill = true;
 	private int hueThreshold = 1;
 	private int saturationThreshold = 2;
@@ -72,8 +73,8 @@ public class ImageLineFillerNew extends ImageLineFiller {
 				if (0 <= ptTransformed.x && ptTransformed.x < currentImage.getImageWidth() &&
 				    0 <= ptTransformed.y && ptTransformed.y < currentImage.getImageHeight()) {
 					currentImage.beginPixelUpdate();
-					if (floodFill) horizontalLineFill(ptTransformed); // TODO : Ajouter le floodfill a la place.
-					else newBorderFill(ptTransformed);		//Ajout : sélection de la methode de remplissage.
+					if (floodFill) newFloodFill(ptTransformed);  
+					else newBorderFill(ptTransformed);		
 					currentImage.endPixelUpdate();											 	
 					return true;
 				}
@@ -122,7 +123,7 @@ public class ImageLineFillerNew extends ImageLineFiller {
 		//On ajoute le premier point a la pile.
 	    points.add(myPoint);
 	    
-	    System.out.println("Filling points, get rdy for awesome.");
+	    System.out.println("Filling points with boundaryFill, get rdy for awesome.");
 	    System.out.println("On imprime avec 8 directions");
 
 	    //On va sortir les points un a un de la pile puis en prendre les coordonnées.
@@ -138,7 +139,7 @@ public class ImageLineFillerNew extends ImageLineFiller {
 	        int x = currentPoint.x;
 	        int y = currentPoint.y;
 
-	        System.out.println("Sur le pixel (" + x + ',' + y + ')');
+	        //System.out.println("Sur le pixel (" + x + ',' + y + ')');
 	        
 	        if(0 <= x && x < currentImage.getImageWidth() && 
 	        		0 <= y && y < currentImage.getImageHeight() &&
@@ -160,6 +161,47 @@ public class ImageLineFillerNew extends ImageLineFiller {
 	    }
 	}
 	
+	
+	public void newFloodFill(Point ptClicked){
+		
+		Stack<Point> points = new Stack<>();
+		
+		Pixel p = currentImage.getPixel(ptClicked.x, ptClicked.y);
+		clickedColor.setARGB(p.getARGB());
+		
+		//On ajoute le premier point a la pile.
+	    points.add(ptClicked);
+	    
+	    System.out.println("Filling points with floodFill, get rdy for awesome.");
+	    System.out.println("On imprime avec 8 directions");
+
+	    while(!points.isEmpty()) {
+	        Point currentPoint = points.pop();
+	        int x = currentPoint.x;
+	        int y = currentPoint.y;
+
+	        //System.out.println("Sur le pixel (" + x + ',' + y + ')');
+	        
+	        if(0 <= x && x < currentImage.getImageWidth() && 
+	        		0 <= y && y < currentImage.getImageHeight() &&
+	        		(currentImage.getPixel(x, y).equals(clickedColor)) && 
+	        		!(currentImage.getPixel(x, y).equals(fillColor))){
+	            
+	        	//On colorie le pixel actuel puisqu'il répond aux conditions.
+	        	currentImage.setPixel(x, y, fillColor);
+
+	            points.push(new Point(x+1, y));
+	            points.push(new Point(x+1,y+1));
+	            points.push(new Point(x, y+1));
+	            points.push(new Point(x-1,y+1));
+	            points.push(new Point(x-1, y));
+	            points.push(new Point(x-1,y-1));
+	            points.push(new Point(x, y-1));
+	            points.push(new Point(x+1,y-1));
+	        }
+	    }
+		
+	}
 	
 	/**
 	 * @return
