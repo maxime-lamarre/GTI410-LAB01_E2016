@@ -1,30 +1,10 @@
-/*
-   This file is part of j2dcg.
-   j2dcg is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-   j2dcg is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   You should have received a copy of the GNU General Public License
-   along with j2dcg; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
 package controller;
 
-import model.*;
+import model.ImageDouble;
+import model.ImageX;
+import model.PixelDouble;
 
-/**
- * <p>Title: MeanFilter3x3</p>
- * <p>Description: A mean filter implementation.</p>
- * <p>Copyright: Copyright (c) 2004 Colin BarrÈ-Brisebois, …ric Paquette</p>
- * <p>Company: ETS - …cole de Technologie SupÈrieure</p>
- * @author unascribed
- * @version $Revision: 1.12 $
- */
-public class MeanFilter3x3 extends Filter {	
+public class UserFilter3x3 extends Filter {	
 	private double filterMatrix[][] = null;
 	
 	/**
@@ -32,14 +12,11 @@ public class MeanFilter3x3 extends Filter {
 	 * @param paddingStrategy PaddingStrategy used 
 	 * @param conversionStrategy ImageConversionStrategy used
 	 */
-	public MeanFilter3x3(PaddingStrategy paddingStrategy, 
+	public UserFilter3x3(PaddingStrategy paddingStrategy, 
 						 ImageConversionStrategy conversionStrategy) {
 		super(paddingStrategy, conversionStrategy);	
 		filterMatrix = new double[3][3];
-		
-		filterMatrix[0][0] = filterMatrix[1][0] = filterMatrix[2][0] = 
-		filterMatrix[0][1] = filterMatrix[1][1] = filterMatrix[2][1] =
-		filterMatrix[0][2] = filterMatrix[1][2] = filterMatrix[2][2] = (1.0/9.0f);
+
 	}
 	
 	/**
@@ -121,5 +98,10 @@ public class MeanFilter3x3 extends Filter {
 		}
 		
 		return newImage;
+	}
+	
+	public void setMatrix(int i, int j, double value){
+		filterMatrix[i][j] = value;
+		System.out.println("["+i+"]"+"["+j+"]"+value);
 	}
 }

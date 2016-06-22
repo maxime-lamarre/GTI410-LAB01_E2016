@@ -25,13 +25,13 @@ import model.Shape;
  * 
  * <p>Title: FilteringTransformer</p>
  * <p>Description: ... (AbstractTransformer)</p>
- * <p>Copyright: Copyright (c) 2004 Sébastien Bois, Eric Paquette</p>
- * <p>Company: (ÉTS) - École de Technologie Supérieure</p>
+ * <p>Copyright: Copyright (c) 2004 SÃˆbastien Bois, Eric Paquette</p>
+ * <p>Company: (â€¦TS) - â€¦cole de Technologie SupÃˆrieure</p>
  * @author unascribed
  * @version $Revision: 1.6 $
  */
 public class FilteringTransformer extends AbstractTransformer{
-	Filter filter = new MeanFilter3x3(new PaddingZeroStrategy(), new ImageClampStrategy());
+	Filter filter = new UserFilter3x3(new PaddingZeroStrategy(), new ImageClampStrategy());
 	
 	/**
 	 * @param _coordinates
@@ -41,6 +41,8 @@ public class FilteringTransformer extends AbstractTransformer{
 		System.out.println("[" + (_coordinates.getColumn() - 1) + "]["
                                    + (_coordinates.getRow() - 1) + "] = " 
                                    + _value);
+		filter.setMatrix((_coordinates.getColumn() - 1), (_coordinates.getRow() - 1), _value);
+		
 	}
 		
 	/**
@@ -50,6 +52,7 @@ public class FilteringTransformer extends AbstractTransformer{
 	 */
 	protected boolean mouseClicked(MouseEvent e){
 		List intersectedObjects = Selector.getDocumentObjectsAtLocation(e.getPoint());
+		int tempo, a, r, g, b;  //Pour info
 		if (!intersectedObjects.isEmpty()) {			
 			Shape shape = (Shape)intersectedObjects.get(0);			
 			if (shape instanceof ImageX) {				
@@ -60,12 +63,19 @@ public class FilteringTransformer extends AbstractTransformer{
 				
 				for (int i = 0; i < currentImage.getImageWidth(); ++i) {
 					for (int j = 0; j < currentImage.getImageHeight(); ++j) {
+						tempo = currentImage.getPixelInt(i, j);
+						a = (tempo >> 24) & 255; //Pour info
+						r = (tempo >> 16) & 255; //Pour info
+						g = (tempo >> 8) & 255;	 //Pour info	
+					    b = tempo & 255; //Pour info
+						//System.out.println("A:"+a+" R:"+r+" G:"+g+" B:"+b); //Pour info
 						currentImage.setPixel(i, j, filteredDisplayableImage.getPixelInt(i, j));
 					}
 				}
 				currentImage.endPixelUpdate();
 			}
 		}
+		System.out.println("mouseClick");
 		return false;
 	}
 

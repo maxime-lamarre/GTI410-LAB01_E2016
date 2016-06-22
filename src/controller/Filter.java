@@ -19,8 +19,8 @@ import model.*;
 /**
  * <p>Title: Filter</p>
  * <p>Description: Abstract class, created to handle both ImageX and ImageDouble filtering
- * <p>Copyright: Copyright (c) 2003 Colin Barré-Brisebois, Eric Paquette</p>
- * <p>Company: ETS - École de Technologie Supérieure</p>
+ * <p>Copyright: Copyright (c) 2003 Colin BarrÃˆ-Brisebois, Eric Paquette</p>
+ * <p>Company: ETS - â€¦cole de Technologie SupÃˆrieure</p>
  * @author unascribed
  * @version $Revision: 1.8 $
  */
@@ -63,6 +63,9 @@ public class Filter {
 	
 	public ImageConversionStrategy getImageConversionStrategy() {
 		return conversionStrategy;
+	}
+
+	public void setMatrix(int i, int j, double _value) {
 	}
 	
 }

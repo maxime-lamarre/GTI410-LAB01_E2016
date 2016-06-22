@@ -32,8 +32,8 @@ import controller.TransformersIndex;
 /**
  * <p>Title: FilterKernelPanel</p>
  * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2003 Sébastien Bois, Eric Paquette</p>
- * <p>Company: (ÉTS) - École de Technologie Supérieure</p>
+ * <p>Copyright: Copyright (c) 2003 SÃˆbastien Bois, Eric Paquette</p>
+ * <p>Company: (â€¦TS) - â€¦cole de Technologie SupÃˆrieure</p>
  * @author unascribed
  * @version $Revision: 1.8 $
  */
@@ -160,65 +160,66 @@ public class FilterKernelPanel extends JPanel implements ObserverIF {
 		switch (index) {
 			case 1: // Mean filter
 			{
-				float meanKernel[][] = {{1, 2, 3},
-										{4, 5, 6},
-										{7, 8, 9}};
+				float meanKernel[][] = {{0.1111111F, 0.1111111F, 0.1111111F},
+										{0.1111111F, 0.1111111F, 0.1111111F},
+										{0.1111111F, 0.1111111F, 0.1111111F}};
 				_kernelPanel.setKernelValues(meanKernel);
+				System.out.println("FilterKernelPanel - Filtre meanKernel");
 			} 
 			break;
 			case 2: // Gaussian filter
 			{
-				float meanKernel[][] = {{2, 2, 3},
-										{4, 5, 6},
-										{7, 8, 9}};
+				float meanKernel[][] = {{0.0625F, 0.125F, 0.0625F},
+										{0.125F, 0.25F, 0.125F},
+										{0.0625F, 0.125F, 0.0625F}};
 				_kernelPanel.setKernelValues(meanKernel);
 			} 
 			break;
 			case 3: // 4-Neighbour Laplacian
 			{
-				float meanKernel[][] = {{3, 2, 3},
-										{4, 5, 6},
-										{7, 8, 9}};
+				float meanKernel[][] = {{0, -1, 0},
+										{-1, 4, -1},
+										{0, -1, 0}};
 				_kernelPanel.setKernelValues(meanKernel);
 			} 
 			break;
 			case 4: // 8-Neighbour Laplacian
 			{
-				float meanKernel[][] = {{4, 2, 3},
-										{4, 5, 6},
-										{7, 8, 9}};
+				float meanKernel[][] = {{-1, -1, -1},
+										{-1, 8, -1},
+										{-1, -1, -1}};
 				_kernelPanel.setKernelValues(meanKernel);
 			} 
 			break;
 			case 5: // Prewitt Horiz
 			{
-				float meanKernel[][] = {{5, 2, 3},
-										{4, 5, 6},
-										{7, 8, 9}};
+				float meanKernel[][] = {{-1, 1, 1},
+										{-1, -2, 1},
+										{-1, 1, 1}};
 				_kernelPanel.setKernelValues(meanKernel);
 			} 
 			break;
 			case 6: // Prewitt Vert
 			{
-				float meanKernel[][] = {{6, 2, 3},
-										{4, 5, 6},
-										{7, 8, 9}};
+				float meanKernel[][] = {{1, 1, 1},
+										{-1, -2, 1},
+										{-1, -1, 1}};
 				_kernelPanel.setKernelValues(meanKernel);
 			} 
 			break;
 			case 7: // Sobel Horiz 
 			{
-				float meanKernel[][] = {{7, 2, 3},
-										{4, 5, 6},
-										{7, 8, 9}};
+				float meanKernel[][] = {{-1, 0, 1},
+										{-2, 0, 2},
+										{-1, 0, 1}};
 				_kernelPanel.setKernelValues(meanKernel);
 			} 
 			break;
 			case 8: // Sobel Vert
 			{
-				float meanKernel[][] = {{8, 2, 3},
-										{4, 5, 6},
-										{7, 8, 9}};
+				float meanKernel[][] = {{1, 2, 1},
+										{0, 0, 0},
+										{-1, -2, -1}};
 				_kernelPanel.setKernelValues(meanKernel);
 			} 
 			break;
