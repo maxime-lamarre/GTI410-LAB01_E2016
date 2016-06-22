@@ -19,11 +19,22 @@ public class PaddingMirrorStrategy extends PaddingStrategy {
 			(y > 0) && (y < image.getImageHeight())) {
 			return image.getPixel(x, y);
 		} else {
-			if ((x < 0) && (y > 0)) return image.getPixel(0, y);
-			if ((x < 0) && (y < 0)) return image.getPixel(0, 0);
-			if ((x > 0) && (y < 0)) return image.getPixel(x, 0);
-			if ((x < 0) && (y > 0)) return image.getPixel(0, y);
-					
+			if ((x >= 0) && (x < image.getImageWidth()) && (y >= image.getImageHeight())) 
+				return image.getPixel(x, image.getImageHeight()-1);   	//Bordure haut
+			if ((x >= 0) && (x < image.getImageWidth()) && (y < 0)) 
+				return image.getPixel(x, 0);   	//Bordure bas
+			if ((x < 0) && (y >= 0) && (y < image.getImageHeight())) 
+				return image.getPixel(0, y);	//Bordure gauche
+			if ((x > image.getImageWidth()) && (y >= 0)  && (y < image.getImageHeight())) 
+				return image.getPixel(0, y);	//Bordure droite
+			if ((x < 0) && (y >= image.getImageHeight())) 
+				return image.getPixel(0, image.getImageHeight()-1);	//Coins haut gauche
+			if ((x >= image.getImageWidth()) && (y >= image.getImageHeight())) 
+				return image.getPixel(image.getImageWidth()-1, image.getImageHeight()-1);	//Coins haut droite
+			if ((x < 0) && (y < 0)) 
+				return image.getPixel(0, 0);	//Coins bas gauche
+			if ((x >= image.getImageWidth()) && (y < 0)) 
+				return image.getPixel(image.getImageWidth()-1, 0);	//Coins bas droite
 		}
 		return image.getPixel(x, y);
 	}
@@ -42,7 +53,24 @@ public class PaddingMirrorStrategy extends PaddingStrategy {
 			(y >= 0) && (y < image.getImageHeight())) {
 			return image.getPixel(x, y);
 		} else {
-			return image.getPixel(x, y);
+			if ((x >= 0) && (x < image.getImageWidth()) && (y >= image.getImageHeight())) 
+				return image.getPixel(x, image.getImageHeight()-1);   	//Bordure haut
+			if ((x >= 0) && (x < image.getImageWidth()) && (y < 0)) 
+				return image.getPixel(x, 0);   	//Bordure bas
+			if ((x < 0) && (y >= 0) && (y < image.getImageHeight())) 
+				return image.getPixel(0, y);	//Bordure gauche
+			if ((x >= image.getImageWidth()) && (y >= 0)  && (y < image.getImageHeight())) 
+				return image.getPixel(0, y);	//Bordure droite
+			if ((x < 0) && (y >= image.getImageHeight())) 
+				return image.getPixel(0, image.getImageHeight()-1);	//Coins haut gauche
+			if ((x >= image.getImageWidth()) && (y >= image.getImageHeight())) 
+				return image.getPixel(image.getImageWidth()-1, image.getImageHeight()-1);	//Coins haut droite
+			if ((x < 0) && (y < 0)) 
+				return image.getPixel(0, 0);	//Coins bas gauche
+			if ((x >= image.getImageWidth()) && (y < 0)) 
+				return image.getPixel(image.getImageWidth()-1, 0);	//Coins bas droite
 		}
+		
+		return image.getPixel(x, y);
 	}
 }

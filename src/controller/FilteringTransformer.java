@@ -89,6 +89,12 @@ public class FilteringTransformer extends AbstractTransformer{
 	 */
 	public void setBorder(String string) {
 		System.out.println(string);
+		if (string.equals("0")) {
+			filter.setPaddingStrategy(new PaddingZeroStrategy());
+		}
+		if (string.equals("Mirror")) {
+			filter.setPaddingStrategy(new PaddingMirrorStrategy());
+		}
 	}
 
 	/**
