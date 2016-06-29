@@ -25,8 +25,8 @@ import model.Shape;
  * 
  * <p>Title: FilteringTransformer</p>
  * <p>Description: ... (AbstractTransformer)</p>
- * <p>Copyright: Copyright (c) 2004 S�bastien Bois, Eric Paquette</p>
- * <p>Company: (�TS) - �cole de Technologie Sup�rieure</p>
+ * <p>Copyright: Copyright (c) 2004 SÈbastien Bois, Eric Paquette</p>
+ * <p>Company: (…TS) - …cole de Technologie SupÈrieure</p>
  * @author unascribed
  * @version $Revision: 1.6 $
  */
@@ -93,7 +93,6 @@ public class FilteringTransformer extends AbstractTransformer{
 		if (string.equals("Mirror")) {
 			filter.setPaddingStrategy(new PaddingMirrorStrategy());
 		}
-		
 	}
 
 	/**
@@ -104,16 +103,17 @@ public class FilteringTransformer extends AbstractTransformer{
 		
 		if (string.equals("Clamp 0...255")) {
 			filter.setImageConversionStrategy(new ImageClampStrategy());
-			System.out.println("Set to clamp");
-		}
-		if (string.equals("Abs and normalize 0 to 255")) {
-			filter.setImageConversionStrategy(new ImageAbs255Strategy());
-			System.out.println("Set to abs");
 		}
 		if (string.equals("Abs and normalize to 255")) {
 			filter.setImageConversionStrategy(new ImageAbs255Strategy());
-			System.out.println("Set to abs");
 		}
 		
+		if (string.equals("Abs and normalize 0 to 255")) {
+			filter.setImageConversionStrategy(new ImageAbs255Strategy());
+		}
+		
+		if (string.equals("Normalize 0 to 255")) {
+			filter.setImageConversionStrategy(new ImageNormalize255Strategy());
+		}
 	}
 }

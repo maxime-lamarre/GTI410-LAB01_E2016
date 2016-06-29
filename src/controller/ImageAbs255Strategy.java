@@ -48,14 +48,14 @@ public class ImageAbs255Strategy extends ImageConversionStrategy {
 		for (int h = 0; h < image.getImageHeight(); h++) {
 			for (int w = 0; w < image.getImageWidth(); w++){
 				tempoPixel = image.getPixel(w, h);
-				if (tempoPixel.getRed() < minRed) {minRed = tempoPixel.getRed();}
-				if (tempoPixel.getRed() > maxRed) {maxRed = tempoPixel.getRed();}
-				if (tempoPixel.getGreen() < minGreen) {minGreen = tempoPixel.getGreen();}
-				if (tempoPixel.getGreen() > maxGreen) {maxGreen = tempoPixel.getGreen();}
-				if (tempoPixel.getBlue() < minBlue) {minBlue = tempoPixel.getBlue();}
-				if (tempoPixel.getBlue() > maxBlue) {maxBlue = tempoPixel.getBlue();}
-				if (tempoPixel.getBlue() < minAlpha) {minAlpha = tempoPixel.getAlpha();}
-				if (tempoPixel.getBlue() > maxAlpha) {maxAlpha = tempoPixel.getAlpha();}
+				if (Math.abs(tempoPixel.getRed()) < minRed) {minRed = Math.abs(tempoPixel.getRed());}
+				if (Math.abs(tempoPixel.getRed()) > maxRed) {maxRed = Math.abs(tempoPixel.getRed());}
+				if (Math.abs(tempoPixel.getGreen()) < minGreen) {minGreen = Math.abs(tempoPixel.getGreen());}
+				if (Math.abs(tempoPixel.getGreen()) > maxGreen) {maxGreen = Math.abs(tempoPixel.getGreen());}
+				if (Math.abs(tempoPixel.getBlue()) < minBlue) {minBlue = Math.abs(tempoPixel.getBlue());}
+				if (Math.abs(tempoPixel.getBlue()) > maxBlue) {maxBlue = Math.abs(tempoPixel.getBlue());}
+				if (Math.abs(tempoPixel.getBlue()) < minAlpha) {minAlpha = Math.abs(tempoPixel.getAlpha());}
+				if (Math.abs(tempoPixel.getBlue()) > maxAlpha) {maxAlpha = Math.abs(tempoPixel.getAlpha());}
 			}
 		}
 		System.out.println("Min Red:"+minRed+" Max Red: "+maxRed);
@@ -64,21 +64,25 @@ public class ImageAbs255Strategy extends ImageConversionStrategy {
 	}
 	
 	private double abs255Red(double value) {
+		value = Math.abs(value);
 		value = 255.0 * (value - minRed) / (maxRed - minRed);
 		return value;
 	}	
 	
 	private double abs255Green(double value) {
+		value = Math.abs(value);
 		value = 255.0 * (value - minGreen) / (maxGreen - minGreen);
 		return value;
 	}
 	
 	private double abs255Blue(double value) {
+		value = Math.abs(value);
 		value = 255.0 * (value - minBlue) / (maxBlue - minBlue);
 		return value;
 	}
 	
 	private double abs255Alpha(double value) {
+		value = Math.abs(value);
 		value = 255.0 * (value - minAlpha) / (maxBlue - minAlpha);
 		return value;
 	}
