@@ -54,8 +54,8 @@ public class ImageAbs255Strategy extends ImageConversionStrategy {
 				if (Math.abs(tempoPixel.getGreen()) > maxGreen) {maxGreen = Math.abs(tempoPixel.getGreen());}
 				if (Math.abs(tempoPixel.getBlue()) < minBlue) {minBlue = Math.abs(tempoPixel.getBlue());}
 				if (Math.abs(tempoPixel.getBlue()) > maxBlue) {maxBlue = Math.abs(tempoPixel.getBlue());}
-				if (Math.abs(tempoPixel.getBlue()) < minAlpha) {minAlpha = Math.abs(tempoPixel.getAlpha());}
-				if (Math.abs(tempoPixel.getBlue()) > maxAlpha) {maxAlpha = Math.abs(tempoPixel.getAlpha());}
+				if (Math.abs(tempoPixel.getAlpha()) < minAlpha) {minAlpha = Math.abs(tempoPixel.getAlpha());}
+				if (Math.abs(tempoPixel.getAlpha()) > maxAlpha) {maxAlpha = Math.abs(tempoPixel.getAlpha());}
 			}
 		}
 		System.out.println("Min Red:"+minRed+" Max Red: "+maxRed);
