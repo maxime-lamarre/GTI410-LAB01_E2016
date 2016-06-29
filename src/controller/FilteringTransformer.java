@@ -25,8 +25,8 @@ import model.Shape;
  * 
  * <p>Title: FilteringTransformer</p>
  * <p>Description: ... (AbstractTransformer)</p>
- * <p>Copyright: Copyright (c) 2004 SÃˆbastien Bois, Eric Paquette</p>
- * <p>Company: (â€¦TS) - â€¦cole de Technologie SupÃˆrieure</p>
+ * <p>Copyright: Copyright (c) 2004 Sébastien Bois, Eric Paquette</p>
+ * <p>Company: (ÉTS) - École de Technologie Supérieure</p>
  * @author unascribed
  * @version $Revision: 1.6 $
  */
@@ -38,9 +38,7 @@ public class FilteringTransformer extends AbstractTransformer{
 	 * @param _value
 	 */
 	public void updateKernel(Coordinates _coordinates, float _value) {
-		System.out.println("[" + (_coordinates.getColumn() - 1) + "]["
-                                   + (_coordinates.getRow() - 1) + "] = " 
-                                   + _value);
+		
 		filter.setMatrix((_coordinates.getColumn() - 1), (_coordinates.getRow() - 1), _value);
 		
 	}
@@ -102,5 +100,14 @@ public class FilteringTransformer extends AbstractTransformer{
 	 */
 	public void setClamp(String string) {
 		System.out.println(string);
+		
+		if (string.equals("Clamp 0...255")) {
+			filter.setImageConversionStrategy(new ImageClampStrategy());
+			System.out.println("Set to clamp");
+		}
+		if (string.equals("Abs and normalize 0 to 255")) {
+			filter.setImageConversionStrategy(new ImageAbs255Strategy());
+			System.out.println("Set to abs");
+		}
 	}
 }

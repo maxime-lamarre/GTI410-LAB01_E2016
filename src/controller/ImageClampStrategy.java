@@ -57,4 +57,6 @@ public class ImageClampStrategy extends ImageConversionStrategy {
 			
 		return value;
 	}
+	
+	
 }
