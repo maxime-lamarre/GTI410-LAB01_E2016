@@ -14,18 +14,27 @@
 */
 package controller;
 
+import java.awt.geom.AffineTransform;
+import java.util.Iterator;
 import java.util.List;
+
+import model.Shape;
 
 /**
  * <p>Title: ScaleCommand</p>
  * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2004 Jean-François Barras, Éric Paquette</p>
- * <p>Company: (ÉTS) - École de Technologie Supérieure</p>
+ * <p>Copyright: Copyright (c) 2004 Jean-Franï¿½ois Barras, ï¿½ric Paquette</p>
+ * <p>Company: (ï¿½TS) - ï¿½cole de Technologie Supï¿½rieure</p>
  * <p>Created on: 2004-03-19</p>
  * @version $Revision: 1.2 $
  */
 public class ScaleCommand extends AnchoredTransformationCommand {
-
+	
+	private MementoTracker mt = new MementoTracker();
+	private List objects;
+	private double sx;
+	private double sy;
+	
 	/**
 	 * @param sx the multiplier to the horizontal size
 	 * @param sy the multiplier to the vertical size
@@ -45,7 +54,17 @@ public class ScaleCommand extends AnchoredTransformationCommand {
 		System.out.println("command: scaling x by " + sx +
                            " and y by " + sy + " ; anchored on " + getAnchor() );
 
-		// voluntarily undefined
+		Iterator iterateur = objects.iterator();
+		Shape shape;
+		while(iterateur.hasNext()){
+			shape = (Shape)iterateur.next();
+			mt.addMememto(shape);
+			AffineTransform t = shape.getAffineTransform();
+			AffineTransform t2 = new AffineTransform();
+			t2.scale(sx, sy);
+			t.preConcatenate(t2);
+			shape.setAffineTransform(t);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -54,10 +73,4 @@ public class ScaleCommand extends AnchoredTransformationCommand {
 	public void undo() {
 		mt.setBackMementos();
 	}
-
-	private MementoTracker mt = new MementoTracker();
-	private List objects;
-	private double sx;
-	private double sy;
-
 }
