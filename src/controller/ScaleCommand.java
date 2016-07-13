@@ -57,29 +57,36 @@ public class ScaleCommand extends AnchoredTransformationCommand {
 
 		Iterator iterateur = objects.iterator();
 		Shape shape;
+		
 		while(iterateur.hasNext()){
 			shape = (Shape)iterateur.next();
-			
-			Point anchorPoint = getAnchorPoint(shape).getLocation();
-			
-			System.out.println("Point d'ancrage : x = " + anchorPoint.getX() + " y = " + anchorPoint.getY());
-			
 			mt.addMememto(shape);
+			
+			int anchorPointX = (int)getAnchorPoint(shape).getX();
+			int anchorPointY = (int)getAnchorPoint(shape).getY();
+			
+			System.out.println("Point d'ancrage : x = " + anchorPointX + " y = " + anchorPointY);
+			
+			int distanceXInit = (int)( 0 - anchorPointX );
+			int distanceYInit = (int)( 0 - anchorPointY );
+			
+			System.out.println("Distance x : " + distanceXInit + ", Distance y : " + distanceYInit);
+			
 			AffineTransform t = shape.getAffineTransform();
 			AffineTransform t2 = new AffineTransform();
-			t2.scale(sx, sy);
+			AffineTransform t3 = new AffineTransform();
+			AffineTransform t4 = new AffineTransform();
+			
+			t4.translate(distanceXInit, distanceYInit);
+			t3.scale(sx, sy);
+			t2.translate(0 - distanceXInit, 0 - distanceYInit);
+			
+			System.out.println("Distance x : " + (0 - distanceXInit) + ", Distance y : " + (0 - distanceYInit));
+			
+			t3.preConcatenate(t4);
+			t2.preConcatenate(t3);
 			t.preConcatenate(t2);
 			shape.setAffineTransform(t);
-
-			anchorPoint = getAnchorPoint(shape).getLocation();
-			
-			System.out.println("Point d'ancrage : x = " + anchorPoint.getX() + " y = " + anchorPoint.getY());
-			
-			int distanceX = (int)( anchorPoint.getX() - ( anchorPoint.getX() * sx ) );
-			int distanceY = (int)( anchorPoint.getY() - ( anchorPoint.getY() * sy ) );
-			
-			TranslateCommand translation = new TranslateCommand(distanceX, distanceY, objects);
-			translation.execute();
 		}
 	}
 

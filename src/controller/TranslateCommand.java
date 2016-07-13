@@ -24,7 +24,7 @@ import model.Shape;
  * <p>Title: TranslateCommand</p>
  * <p>Description: </p>
  * <p>Copyright: Copyright (c) 2004 Eric Paquette</p>
- * <p>Company: (ÉTS) - École de Technologie Supérieure</p>
+ * <p>Company: (ï¿½TS) - ï¿½cole de Technologie Supï¿½rieure</p>
  * <p>Created on: 2004-03-15</p>
  * @author Eric Paquette
  * @version $Revision: 1.3 $
