@@ -54,6 +54,8 @@ public class ShearYCommand extends AnchoredTransformationCommand {
 			image = (Shape) iObjet.next();
 			AffineTransform transformation = image.getAffineTransform();
 			
+			//angleDegrees = angleDegrees / 90;
+			
 			mt.addMememto(image);			
 			transformation.shear(0, angleDegrees);
 			image.setAffineTransform(transformation);
