@@ -14,13 +14,17 @@
 */
 package controller;
 
+import java.awt.geom.AffineTransform;
+import java.util.Iterator;
 import java.util.List;
+
+import model.Shape;
 
 /**
  * <p>Title: RotateCommand</p>
  * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2004 Jean-FranÁois Barras, …ric Paquette</p>
- * <p>Company: (…TS) - …cole de Technologie SupÈrieure</p>
+ * <p>Copyright: Copyright (c) 2004 Jean-Fran√Åois Barras, ‚Ä¶ric Paquette</p>
+ * <p>Company: (‚Ä¶TS) - ‚Ä¶cole de Technologie Sup√àrieure</p>
  * <p>Created on: 2004-03-19</p>
  * @version $Revision: 1.2 $
  */
@@ -44,6 +48,18 @@ public class RotateCommand extends AnchoredTransformationCommand {
 	public void execute() {
 		System.out.println("command: rotate " + thetaDegrees +
                            " degrees around " + getAnchor() + ".");
+		
+		Iterator<Shape> iObjet = objects.iterator();
+		Shape image;
+		
+		while (iObjet.hasNext()){
+			image = (Shape) iObjet.next();
+			AffineTransform transformation = image.getAffineTransform();
+			
+			mt.addMememto(image);			
+			transformation.rotate(Math.toRadians(this.thetaDegrees), this.getAnchorPoint(image).getX(), this.getAnchorPoint(image).getY());
+			image.setAffineTransform(transformation);
+		}
 
 		// voluntarily undefined
 	}
@@ -56,7 +72,7 @@ public class RotateCommand extends AnchoredTransformationCommand {
 	}
 
 	private MementoTracker mt = new MementoTracker();
-	private List objects;
+	private List<Shape> objects;
 	private double thetaDegrees;
 	
 }

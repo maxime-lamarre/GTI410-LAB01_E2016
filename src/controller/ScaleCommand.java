@@ -60,33 +60,40 @@ public class ScaleCommand extends AnchoredTransformationCommand {
 		
 		while(iterateur.hasNext()){
 			shape = (Shape)iterateur.next();
-			mt.addMememto(shape);
-			
-			int anchorPointX = (int)getAnchorPoint(shape).getX();
-			int anchorPointY = (int)getAnchorPoint(shape).getY();
-			
-			System.out.println("Point d'ancrage : x = " + anchorPointX + " y = " + anchorPointY);
-			
-			int distanceXInit = (int)( 0 - anchorPointX );
-			int distanceYInit = (int)( 0 - anchorPointY );
-			
-			System.out.println("Distance x : " + distanceXInit + ", Distance y : " + distanceYInit);
-			
 			AffineTransform t = shape.getAffineTransform();
-			AffineTransform t2 = new AffineTransform();
-			AffineTransform t3 = new AffineTransform();
-			AffineTransform t4 = new AffineTransform();
 			
-			t4.translate(distanceXInit, distanceYInit);
-			t3.scale(sx, sy);
-			t2.translate(0 - distanceXInit, 0 - distanceYInit);
-			
-			System.out.println("Distance x : " + (0 - distanceXInit) + ", Distance y : " + (0 - distanceYInit));
-			
-			t3.preConcatenate(t4);
-			t2.preConcatenate(t3);
-			t.preConcatenate(t2);
+			mt.addMememto(shape);
+			t.translate(0 - this.getAnchorPoint(shape).getX(), 0 - this.getAnchorPoint(shape).getY());
+			t.scale(sx, sy);
+			t.translate(this.getAnchorPoint(shape).getX(), this.getAnchorPoint(shape).getY());
 			shape.setAffineTransform(t);
+			
+			
+//			int anchorPointX = (int)this.getAnchorPoint(shape).getX();
+//			int anchorPointY = (int)this.getAnchorPoint(shape).getY();
+//			
+//			System.out.println("Point d'ancrage : x = " + anchorPointX + " y = " + anchorPointY);
+//			
+//			int distanceXInit = (int)( 0 - anchorPointX );
+//			int distanceYInit = (int)( 0 - anchorPointY );
+//			
+//			System.out.println("Distance x : " + distanceXInit + ", Distance y : " + distanceYInit);
+//			
+//			AffineTransform t = shape.getAffineTransform();
+//			AffineTransform t2 = new AffineTransform();
+//			AffineTransform t3 = new AffineTransform();
+//			AffineTransform t4 = new AffineTransform();
+//			
+//			t4.translate(distanceXInit, distanceYInit);
+//			t3.scale(sx, sy);
+//			t2.translate(0 - distanceXInit, 0 - distanceYInit);
+//			
+//			System.out.println("Distance x : " + (0 - distanceXInit) + ", Distance y : " + (0 - distanceYInit));
+//			
+//			t3.preConcatenate(t4);
+//			t2.preConcatenate(t3);
+//			t.preConcatenate(t2);
+//			shape.setAffineTransform(t);
 		}
 	}
 
