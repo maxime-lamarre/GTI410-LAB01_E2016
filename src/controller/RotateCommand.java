@@ -57,7 +57,7 @@ public class RotateCommand extends AnchoredTransformationCommand {
 			AffineTransform transformation = image.getAffineTransform();
 			
 			mt.addMememto(image);			
-			transformation.rotate(Math.toRadians(this.thetaDegrees), this.getAnchorPoint(image).getX(), this.getAnchorPoint(image).getY());
+			transformation.rotate(Math.toRadians(this.thetaDegrees), this.getAnchorPoint(objects).getX(), this.getAnchorPoint(objects).getY());
 			image.setAffineTransform(transformation);
 		}
 

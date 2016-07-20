@@ -15,13 +15,15 @@
 package controller;
 
 import java.awt.Point;
+import java.util.List;
+
 import model.Shape;
 
 /**
  * <p>Title: AnchoredTransformationCommand</p>
  * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2004 Jean-François Barras, Éric Paquette</p>
- * <p>Company: (ÉTS) - École de Technologie Supérieure</p>
+ * <p>Copyright: Copyright (c) 2004 Jean-Franï¿½ois Barras, ï¿½ric Paquette</p>
+ * <p>Company: (ï¿½TS) - ï¿½cole de Technologie Supï¿½rieure</p>
  * <p>Created on: 2004-03-19</p>
  * @version $Revision: 1.4 $
  */
@@ -51,7 +53,8 @@ public abstract class AnchoredTransformationCommand extends Command {
 	 * @param objects
 	 * @return
 	 */	
-	protected Point getAnchorPoint(Shape s) {
+	protected Point getAnchorPoint(List objects) {
+		Shape s = (Shape)objects.get(0);
 		java.awt.Rectangle r = s.getRectangle();
 		int x, y;
 		if (anchor == TOP_LEFT || anchor == MIDDLE_LEFT || anchor == BOTTOM_LEFT) {
